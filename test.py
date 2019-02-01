@@ -39,12 +39,18 @@ def donnees(data):
             [tx,ty] = coord2(s, f)
             x.append(tx)
             y.append(ty)
-            color.append([r/max_reading, g/max_reading, b/max_reading])
+            print r , ' ' , max_reading
+            color.append([round(r)/round(max_reading), round(g)/round(max_reading), round(b)/round(max_reading)])
     return x,y,color
 
 # draw the unfolding
 def draw(data):
     x, y, color = donnees(data)
+    print x
+    """
+    for i in range(0,len(x)):
+      print x[i] , ' ' , y[i], ' ', color[i]
+    """
     plt.scatter(x, y, s=800, marker='s', c=color)
     plt.title('Rubik\'s cube unfolding')
     plt.axis('off')
