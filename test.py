@@ -62,14 +62,19 @@ def draw(data):
     for s, side in enumerate(data):
         for f, (r,g,b) in enumerate(side):
 	  indice = 0
-	  min_color = max_color
 	  size = len(c)
+	  
+	  v = '#{:02x}{:02x}{:02x}'.format( 200, 200 , 254 )
+	  min_color = int(v[1:], 16)
 	  for i in range(0,size):
-	    rr = abs(r - c[i][0])
+	    valeur = '#{:02x}{:02x}{:02x}'.format( r, g , b )
+	    valeur2 = '#{:02x}{:02x}{:02x}'.format( c[i][0], c[i][1] , c[i][2] )
+	    """ rr = abs(r - c[i][0])
 	    gg = abs(g - c[i][1])
-	    bb = abs(b - c[i][2])
-	    if (min_color > ((rr +gg+bb)/3) ):
-	     min_color = (rr +gg+bb)/3
+	    bb = abs(b - c[i][2])"""
+	    m = abs(int(valeur2[1:], 16) - int(valeur[1:], 16))
+	    if (min_color >  m):
+	     min_color = m
 	     indice = i
 	  #print indice
 	  color_center[indice].append( [r,g,b] )
