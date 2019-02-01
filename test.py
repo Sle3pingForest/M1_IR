@@ -36,7 +36,6 @@ def donnees(data):
 
     for s, side in enumerate(data):
         for f, (r,g,b) in enumerate(side):
-	    print f
             [tx,ty] = coord2(s, f)
             x.append(tx)
             y.append(ty)
@@ -51,32 +50,34 @@ def draw(data):
    
     n = 9
     m = 6
-    color_center = [[0] * n for i in range(n)]
-    color_center.clear()
+    #color_center = [[] * 54] * 6
+    color_center = []
+    for k in range(0,6):
+      color_center.append([])
+   
+    cccc = []
     
-    
-    for s, side in enumerate(data):
-      color_center[s].append(data[s])
-    
+    compteur = 0
     
     for s, side in enumerate(data):
         for f, (r,g,b) in enumerate(side):
-	   min_color = max_color
-	   indice = s
-	   size = len(color_center)-1
-	   #print f
-	   for i in range(0,size):
-	    rr = abs(r - color_center[i][0])
-	    gg = abs(g - color_center[i][1])
-	    bb = abs(b - color_center[i][2])
+	  indice = 0
+	  min_color = max_color
+	  size = len(c)
+	  for i in range(0,size):
+	    rr = abs(r - c[i][0])
+	    gg = abs(g - c[i][1])
+	    bb = abs(b - c[i][2])
 	    if (min_color > ((rr +gg+bb)/3) ):
-	      indice = s
-	    #print indice
-	   color_center[indice].append( [r,g,b] )
+	     min_color = (rr +gg+bb)/3
+	     indice = i
+	  #print indice
+	  color_center[indice].append( [r,g,b] )
+	   #print ' JESUIS FACE ' , s , ' EN FACET ', f , ' JAJOUTE DANS ' , indice , ' COMPTEUR ' , compteur
+	   #print color_center[indice]
 	      
-	  
-    for i in range(0,5):
-      print color_center[i], '\n'      
+    for i in range(0,len(color_center) ):
+      print ' COULEUR SIDE ',  c[i], '  liste facet: ', color_center[i], '\n'      
     
     plt.scatter(x, y, s=800, marker='s', c=color)
     plt.title('Rubik\'s cube unfolding')
