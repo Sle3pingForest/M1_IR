@@ -26,7 +26,7 @@ def coord2(s,f):
 
 # assemble x,y coordinates and sticker colors into three arrays
 def donnees(data):
-    x, y, color, color_true = [], [], [], []
+    x, y, color, color_true, group_color = [], [], [], [], []
 
     max_reading = 0
     for side in data:
@@ -36,6 +36,7 @@ def donnees(data):
 
     for s, side in enumerate(data):
         for f, (r,g,b) in enumerate(side):
+	    print f
             [tx,ty] = coord2(s, f)
             x.append(tx)
             y.append(ty)
@@ -46,8 +47,37 @@ def donnees(data):
 
 # draw the unfolding
 def draw(data):
-    x, y, color, color_true, max = donnees(data)
-    print color_true
+    x, y, color, c, max_color = donnees(data)
+   
+    n = 9
+    m = 6
+    color_center = [[0] * n for i in range(n)]
+    color_center.clear()
+    
+    
+    for s, side in enumerate(data):
+      color_center[s].append(data[s])
+    
+    
+    for s, side in enumerate(data):
+        for f, (r,g,b) in enumerate(side):
+	   min_color = max_color
+	   indice = s
+	   size = len(color_center)-1
+	   #print f
+	   for i in range(0,size):
+	    rr = abs(r - color_center[i][0])
+	    gg = abs(g - color_center[i][1])
+	    bb = abs(b - color_center[i][2])
+	    if (min_color > ((rr +gg+bb)/3) ):
+	      indice = s
+	    #print indice
+	   color_center[indice].append( [r,g,b] )
+	      
+	  
+    for i in range(0,5):
+      print color_center[i], '\n'      
+    
     plt.scatter(x, y, s=800, marker='s', c=color)
     plt.title('Rubik\'s cube unfolding')
     plt.axis('off')
