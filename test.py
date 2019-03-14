@@ -27,7 +27,6 @@ def coord2(s,f):
 # assemble x,y coordinates and sticker colors into three arrays
 def donnees(data):
     x, y, color, color_true, group_color = [], [], [], [], []
-
     max_reading = 0
     for side in data:
         for facet in side:
@@ -80,16 +79,45 @@ def draw(data):
 	  color_center[indice].append( [r,g,b] )
 	   #print ' JESUIS FACE ' , s , ' EN FACET ', f , ' JAJOUTE DANS ' , indice , ' COMPTEUR ' , compteur
 	   #print color_center[indice]
-	      
-    for i in range(0,len(color_center) ):
-      print ' COULEUR SIDE ',  c[i], '  liste facet: ', color_center[i], '\n'      
     
+    print c
+    tamere = []
+    tonpere = []
+    for k in range(0,6):
+      tonpere.append([])
+    for i in range (0, len(c)):
+        tamere.append( [ round(c[i][0])/68,  round(c[i][1]) / 68, round(c[i][2])/68] )
+            
+        
+    
+    for i in range(0,len(color_center) ):
+        
+        plt.scatter(i, 0, s=800, marker='s', c=tamere[i])
+        p = 5
+        for j in range(0, len(color_center[i]) ):
+            p += 5
+            print ' COULEUR SIDE ',  c[i], '  liste facet: ', color_center[i], '\n'
+            #print len(color_center) , "    "  , i   , "    " , len(color_center[i]) , "   " , j , " rgb   " , color_center[i][j][1], "  " , color_center[i][j][0] , "  " , color_center[i][j][2]
+            tonpere[i].append(  [ round(color_center[i][j][0])/68,  round(color_center[i][j][1]) / 68, round(color_center[i][j][2])/68] )
+
+            xplacer = i
+            yplacer = j;
+            if (j > 9 ):
+                xplacer = i +0.5
+                yplacer = j - 60
+            plt.scatter(xplacer, yplacer + 5 + p , s=800, marker='o', c=tonpere[i][j])
+
+
+    
+    plt.savefig('unfolding.png')
+    plt.show()
+    """
     plt.scatter(x, y, s=800, marker='s', c=color)
     plt.title('Rubik\'s cube unfolding')
     plt.axis('off')
     plt.savefig('unfolding.png')
     plt.show()    
-    
+    """
     
      
 
@@ -102,6 +130,7 @@ data = [
 [[9, 24, 29],[11, 31, 34],[8, 23, 27],[13, 32, 34],[15, 41, 40],[12, 31, 33],[11, 27, 31],[13, 34, 34],[10, 26, 30]]
 ]
 
+
 data_turned = [
 [[4, 4, 8],[4, 5, 8],[4, 6, 8],[3, 5, 7],[5, 7, 9],[3, 6, 7],[3, 5, 8],[4, 5, 7],[4, 5, 8]],
 [[27, 39, 44],[30, 44, 45],[26, 38, 43],[46, 52, 37],[59, 68, 45],[47, 52, 37],[22, 9, 4],[26, 10, 5],[24, 8, 5]],
@@ -110,7 +139,6 @@ data_turned = [
 [[38, 44, 35],[35, 48, 50],[27, 32, 43],[48, 54, 39],[47, 64, 62],[36, 43, 48],[41, 46, 37],[35, 48, 48],[30, 35, 44]],
 [[11, 29, 32],[13, 32, 34],[9, 25, 29],[12, 33, 33],[16, 42, 41],[10, 33, 34],[11, 30, 32],[13, 33, 34],[10, 28, 30]],
 ]
-
-draw(data)
+#draw(data)
 draw(data_turned)
 
