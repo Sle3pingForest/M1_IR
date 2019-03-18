@@ -24,6 +24,51 @@ def coord2(s,f):
     y -= (f//3)*10
     return x,y
 
+# retourne les huits combinaisons de triplets possibles en fonction des centres
+def couleurCoin(data):
+    tab = []
+    for i in range(0,8):
+        tab.append([])
+    """
+    tab[0].append(data[0][4])
+    tab[0].append(data[1][4])
+    tab[0].append(data[2][4])
+    """
+    tab[0].extend( (data[0][4], data[1][4] , data[2][4]) )
+    tab[1].extend( (data[0][4], data[1][4] , data[4][4]) )
+    tab[2].extend((data[0][4], data[2][4] , data[3][4]))
+    tab[3].extend((data[0][4], data[3][4] , data[4][4]))
+
+    tab[4].extend((data[5][4], data[1][4] , data[2][4]))
+    tab[5].extend((data[5][4], data[1][4] , data[4][4]))
+    tab[6].extend((data[5][4], data[2][4] , data[3][4]))
+    tab[7].extend((data[5][4], data[3][4] , data[4][4]))
+
+    return tab
+
+
+def voisinHaut(i):
+    
+    if i==0 or i==2 or i==4 or i== 5: return 1
+    elif i==1: return 5
+    elif i==3: return 0
+
+def voisinDroite(i):
+    if i==0 or i==1 or i==3: return 4
+    elif i==2: return 0 
+    elif i==4: return 5
+    elif i==5: return 2
+
+def voisinGauche(i): 
+    if i==0 or i==1 or i==3: return 2
+    elif i==2: return 5
+    elif i==4: return 0
+    elif i==5: return 4
+
+def voisinBas(i): 
+    if i==0 or i==2 or i==4 or i==5: return 3
+    elif i==1: return 0
+    elif i==3: return 5
 
 # assemble x,y coordinates and sticker colors into three arrays
 def donnees(data):
@@ -44,7 +89,11 @@ def donnees(data):
 	     color_true.append([r, g, b])
     return x,y,color, color_true, max_reading
 
-# draw the unfolding
+
+
+
+    
+# draw the unfolding / TA PARTIE A FINIR NAM GROSAc
 def draw(data):
     x, y, color, c, max_color = donnees(data)
    
@@ -134,13 +183,133 @@ def draw(data):
     plt.savefig('unfolding.png')
     plt.show()    
     """
+         
+
+
+#draw the unfolding 
+def draw2(data):
+    x, y, color, c, max_color = donnees(data)
+   
+    n = 9
+    m = 6
+   
+    color_center = []
+    tabCoin = []
+    tab_coeff = {}
+    for k in range(0,6):
+      color_center.append([])
+      
+
+    for k in range(0,8):
+        tabCoin.append([])
+
+    tabCoin[0].append(data[0][0]) 
+    tabCoin[0].append(data[1][6])
+    tabCoin[0].append(data[2][2])
+    tabCoin[1].extend((data[0][2], data[1][8], data[4][0]))
+    tabCoin[2].extend((data[0][6], data[2][8], data[3][0]))
+    tabCoin[3].extend((data[0][8], data[3][2], data[4][6]))
+
+
+    tabCoinCheck = couleurCoin(data)
+    tabdiffFinal = []
+    for i in range(0,1):
+        tabC = []
+        for p in range(0,3):
+            tabC.append([])
+        
+
+        tabC[0].append(moyenneRGB(tabCoin[0][0] , tabCoinCheck[i][0]))
+        tabC[0].append(moyenneRGB(tabCoin[0][0] , tabCoinCheck[i][1]))
+        tabC[0].append(moyenneRGB(tabCoin[0][0] , tabCoinCheck[i][2]))
+
+        tabC[1].append(moyenneRGB(tabCoin[0][1] , tabCoinCheck[i][0]))
+        tabC[1].append(moyenneRGB(tabCoin[0][1] , tabCoinCheck[i][1]))
+        tabC[1].append(moyenneRGB(tabCoin[0][1] , tabCoinCheck[i][2]))
+
+        tabC[2].append(moyenneRGB(tabCoin[0][2] , tabCoinCheck[i][0]))
+        tabC[2].append(moyenneRGB(tabCoin[0][2] , tabCoinCheck[i][1]))
+        tabC[2].append(moyenneRGB(tabCoin[0][2] , tabCoinCheck[i][2]))
+        
+
+        tabaffiche = []
+        for j in range(0,3):
+            
+            min = 256
+            indice = -1
+            
+            
+            for i in range(0,3):
+                if min > tabC[i][j]:
+                    min = tabC[i][j]
+                    indice = i
+            tabdiffFinal.append(tabC[indice][j])
+            tabaffiche.append(tabCoin[0][indice])
+            tabC[indice][0] = 256 
+            tabC[indice][1] = 256 
+            tabC[indice][2] = 256 
     
-     
+    for i in range(0,len(tabaffiche)):
+        tabaffiche[i] = rgb255to01(tabaffiche[i],68)
+        tabCoinCheck[0][i] = rgb255to01(tabCoinCheck[0][i],68)
+    print tabdiffFinal
+
+    f = plt.figure(1)
+
+    #for j in range (0,8):
+    for i in range(0,3):
+        plt.scatter(i, 0, s=800, marker='o', c=tabCoinCheck[0][i])
+        plt.scatter(i, 10, s=800, marker='o', c=tabaffiche[i])
+    """
+    plt.scatter(x, y, s=800, marker='s', c=color)
+    plt.title('Rubik\'s cube unfolding')
+    plt.axis('off')
+    plt.savefig('unfolding.png')
+    """  
+
+    g = plt.figure(2)
+    plt.scatter(x, y, s=800, marker='s', c=color)
+    
+    plt.show()
+
+    # CA OUVRE 2 FENETRE YOUPI
+
+
+
+def moyenneRGB(c1, c2):
+    r1 = abs(c1[0] - c2[0])
+
+    g1 = abs(c1[1] - c2[1])
+
+    b1 = abs(c1[2] - c2[2])
+
+    return (r1+g1+b1)/3
+
+def rgb255to01(c1,div):
+    c1[0] = round(c1[0])/div
+    c1[1] = round(c1[1])/div
+    c1[2] = round(c1[2])/div
+    return c1
+    
+
+def calculDiffColorRGB(c1, c2):
+
+    r1 = c1[0]/ (c1[0]+c1[1]+c1[2])
+    r2 = c2[0]/ (c2[0]+c2[1]+c2[2])
+
+    g1 = c1[1]/ (c1[0]+c1[1]+c1[2])
+    g2 = c2[1]/ (c2[0]+c2[1]+c2[2])
+
+    b1 = c1[2]/ (c1[0]+c1[1]+c1[2])
+    b2 = c2[2]/ (c2[0]+c2[1]+c2[2])
+    return abs(r1-r2), abs(g1-g2),abs(b1-b2)
+
+
 
 data = [
-[[3, 5, 6],[4, 6, 8],[5, 7, 9],[3, 5, 8],[4, 6, 9],[3, 5, 7],[4, 6, 7],[4, 6, 8],[3, 4, 7]],
-[[31, 35, 29],[46, 52, 38],[35, 40, 33],[44, 48, 36],[59, 68, 45],[45, 50, 37],[34, 39, 31],[47, 51, 38],[36, 42, 33]],
-[[21, 8, 5],[28, 8, 5],[22, 7, 5],[25, 9, 4],[32, 12, 6],[24, 8, 4],[17, 7, 4],[27, 9, 4],[19, 7, 5]],
+[[22, 7, 5],[4, 6, 8],[5, 7, 9],[3, 5, 8],[4, 6, 9],[3, 5, 7],[4, 6, 7],[4, 6, 8],[3, 4, 7]],
+[[31, 35, 29],[46, 52, 38],[35, 40, 33],[44, 48, 36],[59, 68, 45],[45, 50, 37], [3, 5, 6],[47, 51, 38],[36, 42, 33]],
+[[21, 8, 5],[28, 8, 5],[34, 39, 31],[25, 9, 4],[32, 12, 6],[24, 8, 4],[17, 7, 4],[27, 9, 4],[19, 7, 5]],
 [[28, 33, 42],[35, 40, 47],[26, 32, 39],[37, 42, 47],[52, 60, 62],[34, 40, 48],[27, 34, 42],[34, 40, 45],[24, 29, 40]],
 [[24, 36, 41],[33, 44, 49],[24, 34, 38],[29, 43, 44],[43, 61, 59],[28, 42, 44],[25, 38, 42],[33, 46, 48],[24, 35, 41]],
 [[9, 24, 29],[11, 31, 34],[8, 23, 27],[13, 32, 34],[15, 41, 40],[12, 31, 33],[11, 27, 31],[13, 34, 34],[10, 26, 30]]
@@ -155,10 +324,13 @@ data_turned = [
 [[38, 44, 35],[35, 48, 50],[27, 32, 43],[48, 54, 39],[47, 64, 62],[36, 43, 48],[41, 46, 37],[35, 48, 48],[30, 35, 44]],
 [[11, 29, 32],[13, 32, 34],[9, 25, 29],[12, 33, 33],[16, 42, 41],[10, 33, 34],[11, 30, 32],[13, 33, 34],[10, 28, 30]],
 ]
-draw(data)
+draw2(data)
 #draw(data_turned)
 
 """ 
+16  [34, 39, 31]
+00 [3, 5, 6]
+22 [22, 7, 5]
 
 [52, 60, 62]
 [24, 29, 40]
