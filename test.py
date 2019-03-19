@@ -51,18 +51,18 @@ def couleurArete(data):
     for i in range(0,12):
         tab.append([])
 
-    tab[0].extend((data[1][7],data[0][1]))
-    tab[1].extend((data[2][5],data[0][3]))
-    tab[2].extend((data[3][1],data[0][7]))
-    tab[3].extend((data[4][3],data[0][5]))
-    tab[4].extend((data[1][5],data[4][1]))
-    tab[5].extend((data[1][3],data[2][1]))
-    tab[6].extend((data[1][1],data[5][1]))
-    tab[7].extend((data[2][3],data[5][5]))
-    tab[8].extend((data[2][7],data[3][3]))
-    tab[9].extend((data[3][7],data[5][7]))
-    tab[10].extend((data[3][5],data[4][7]))
-    tab[11].extend((data[4][5],data[5][3]))
+    tab[0].extend((data[1][4],data[0][4]))
+    tab[1].extend((data[2][4],data[0][4]))
+    tab[2].extend((data[3][4],data[0][4]))
+    tab[3].extend((data[4][4],data[0][4]))
+    tab[4].extend((data[1][4],data[4][4]))
+    tab[5].extend((data[1][4],data[2][4]))
+    tab[6].extend((data[1][4],data[5][4]))
+    tab[7].extend((data[2][4],data[5][4]))
+    tab[8].extend((data[2][4],data[3][4]))
+    tab[9].extend((data[3][4],data[5][4]))
+    tab[10].extend((data[3][4],data[4][4]))
+    tab[11].extend((data[4][4],data[5][4]))
     return tab
 
 def tabAreteCouleur(data):
