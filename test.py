@@ -252,7 +252,7 @@ def draw2(data):
     tab_coeff = {}
     for k in range(0,6):
       color_center.append([])
-    for k in range(0,6):  
+    for k in range(0,8):  
         tabPref.append([])
     
     tabCoinCheck = couleurCoin(data)
@@ -260,25 +260,34 @@ def draw2(data):
 
     for i in range(0, len(tabCoin)): #parcours tous les coin 
         for j in range(0,len(tabCoinCheck)): #parcours tous les triplets de couleurs des centre a comparer
-            print tabCoin[i], "    " , tabCoinCheck[j]
+            #print tabCoin[i], "    " , tabCoinCheck[j]
             t, tt = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[j])
             tabPref[i].append(t)
 
     for i in range(0, len(tabPref)):
-        coinPref.append( choixMeileurCentre(tabPref[i]) )
+        coinPref.append( choixMeilleurCentre(tabPref[i]) )
 
     tabFinal = []
     for i in range(0,len(tabCoin)):
         indice = coinPref[i][1]
-        tabFinal = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[indice])
+        t , tt = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[indice])
+        tabFinal.append( tt  ) 
 
-    tabFigure = [f, g, h, j ,k, l, m, n]
-    for i in range(1,len(tabFigure)+1):
-        tabFigure[i] = plt.figure(i)
-        for xx in range(0,3):
-            plt.scatter(xx, 0, s=800, marker='o', c=tabCoinCheck[i][xx])
-            plt.scatter(xx, 10, s=800, marker='o', c=tabFinal[i][xx])
+    copieCheck = tabCoinCheck
+    tabFigure = ['f', 'g', 'h', 'j' ,'k', 'l', 'm', 'n']
 
+    #print " association " , tabFinal
+   # print " coin centre " , copieCheck
+    for i in range(0,len(tabFigure)):
+        plt.figure(i+1)
+        
+        for j in range(0,3):
+            t = [round(copieCheck[i][j][0])/68 , round(copieCheck[i][j][1])/68, round(copieCheck[i][j][2])/68 ]
+            #print t
+            tt = [round(tabFinal[i][j][0])/68 , round(tabFinal[i][j][1])/68, round(tabFinal[i][j][2])/68 ]
+            #print tt
+            plt.scatter(j, 0, s=800, marker='o', c= t )
+            plt.scatter(j, 10, s=800, marker='o', c= tt )
     plt.show()
 
     """
@@ -325,18 +334,18 @@ def choixPlusPetiteDiff(tabCoin, tabCoinCheck):
             tabC.append([])
         
 
-        tabC[0].append(moyenneRGB(tabCoin[0][0] , tabCoinCheck[i][0]))
-        tabC[0].append(moyenneRGB(tabCoin[0][0] , tabCoinCheck[i][1]))
-        tabC[0].append(moyenneRGB(tabCoin[0][0] , tabCoinCheck[i][2]))
+        tabC[0].append(moyenneRGB(tabCoin[0] , tabCoinCheck[0]))
+        tabC[0].append(moyenneRGB(tabCoin[0] , tabCoinCheck[1]))
+        tabC[0].append(moyenneRGB(tabCoin[0] , tabCoinCheck[2]))
 
-        tabC[1].append(moyenneRGB(tabCoin[0][1] , tabCoinCheck[i][0]))
-        tabC[1].append(moyenneRGB(tabCoin[0][1] , tabCoinCheck[i][1]))
-        tabC[1].append(moyenneRGB(tabCoin[0][1] , tabCoinCheck[i][2]))
+        tabC[1].append(moyenneRGB(tabCoin[1] , tabCoinCheck[0]))
+        tabC[1].append(moyenneRGB(tabCoin[1] , tabCoinCheck[1]))
+        tabC[1].append(moyenneRGB(tabCoin[1] , tabCoinCheck[2]))
 
-        tabC[2].append(moyenneRGB(tabCoin[0][2] , tabCoinCheck[i][0]))
-        tabC[2].append(moyenneRGB(tabCoin[0][2] , tabCoinCheck[i][1]))
-        tabC[2].append(moyenneRGB(tabCoin[0][2] , tabCoinCheck[i][2]))
-        
+        tabC[2].append(moyenneRGB(tabCoin[2] , tabCoinCheck[0]))
+        tabC[2].append(moyenneRGB(tabCoin[2] , tabCoinCheck[1]))
+        tabC[2].append(moyenneRGB(tabCoin[2] , tabCoinCheck[2]))
+        print " debut   "
 
         tabaffiche = []
         for j in range(0,3):
@@ -349,20 +358,23 @@ def choixPlusPetiteDiff(tabCoin, tabCoinCheck):
                 if min > tabC[i][j]:
                     min = tabC[i][j]
                     indice = i
+                    print " min " , min
             tabdiffFinal.append(tabC[indice][j])
-            tabaffiche.append(tabCoin[0][indice])
+            tabaffiche.append(tabCoin[indice])
+            print tabCoinCheck , "      " , tabC[indice][j] , "    " , j , "   " , tabCoin[indice]
             tabC[indice][0] = 256 
             tabC[indice][1] = 256 
-            tabC[indice][2] = 256 
+            tabC[indice][2] = 256
     """
     for i in range(0,len(tabaffiche)):
         tabaffiche[i] = rgb255to01(tabaffiche[i],68)
         #tabCoinCheck[0][i] = rgb255to01(tabCoinCheck[0][i],68)
     print tabdiffFinal
     """
+    print " \n saut \n" 
     somme = 0
-    for i in range (0, len(tadDiffFinal)):
-        somme = tabDiffFinal[i]
+    for i in range (0, len(tabdiffFinal)):
+        somme = tabdiffFinal[i]
     return round(somme)/3, tabaffiche
 
 def moyenneRGB(c1, c2):
@@ -379,7 +391,10 @@ def rgb255to01(c1,div):
     c1[1] = round(c1[1])/div
     c1[2] = round(c1[2])/div
     return c1
-    
+
+
+def t255to01(c1,div):
+    return  round(c1[0])/div,  round(c1[0])/div,  round(c1[0])/div
 
 def calculDiffColorRGB(c1, c2):
 
