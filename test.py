@@ -383,7 +383,8 @@ def moyenneRGB(c1, c2):
     g1 = abs(c1[1] - c2[1])
 
     b1 = abs(c1[2] - c2[2])
-
+    print "r1 g1 b1",r1 , g1 , b1
+    print "moyenne :", round(r1+g1+b1)/3
     return (r1+g1+b1)/3
 
 def rgb255to01(c1,div):
