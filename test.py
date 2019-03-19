@@ -34,8 +34,8 @@ def couleurCoin(data):
     tab[0].append(data[1][4])
     tab[0].append(data[2][4])
     """
-    tab[0].extend( (data[0][4], data[1][4] , data[2][4]) )
-    tab[1].extend( (data[0][4], data[1][4] , data[4][4]) )
+    tab[0].extend((data[0][4], data[1][4] , data[2][4]))
+    tab[1].extend((data[0][4], data[1][4] , data[4][4]))
     tab[2].extend((data[0][4], data[2][4] , data[3][4]))
     tab[3].extend((data[0][4], data[3][4] , data[4][4]))
 
@@ -45,6 +45,58 @@ def couleurCoin(data):
     tab[7].extend((data[5][4], data[3][4] , data[4][4]))
 
     return tab
+
+def couleurArete(data):
+    tab = []
+    for i in range(0,12):
+        tab.append([])
+
+    tab[0].extend((data[1][7],data[0][1]))
+    tab[1].extend((data[2][5],data[0][3]))
+    tab[2].extend((data[3][1],data[0][7]))
+    tab[3].extend((data[4][3],data[0][5]))
+    tab[4].extend((data[1][5],data[4][1]))
+    tab[5].extend((data[1][3],data[2][1]))
+    tab[6].extend((data[1][1],data[5][1]))
+    tab[7].extend((data[2][3],data[5][5]))
+    tab[8].extend((data[2][7],data[3][3]))
+    tab[9].extend((data[3][7],data[5][7]))
+    tab[10].extend((data[3][5],data[4][7]))
+    tab[11].extend((data[4][5],data[5][3]))
+    return tab
+
+def tabAreteCouleur(data):
+    tab = []
+    for i in range(0,12):
+        tab.append([])
+    tab[0].extend((data[1][7],data[0][1]))
+    tab[1].extend((data[2][5],data[0][3]))
+    tab[2].extend((data[3][1],data[0][7]))
+    tab[3].extend((data[4][3],data[0][5]))
+    tab[4].extend((data[1][5],data[4][1]))
+    tab[5].extend((data[1][3],data[2][1]))
+    tab[6].extend((data[1][1],data[5][1]))
+    tab[7].extend((data[2][3],data[5][5]))
+    tab[8].extend((data[2][7],data[3][3]))
+    tab[9].extend((data[3][7],data[5][7]))
+    tab[10].extend((data[3][5],data[4][7]))
+    tab[11].extend((data[4][5],data[5][3]))
+    return tab
+
+def tabCoinCouleur(data):
+    tabCoin = []
+    for k in range(0,8):
+        tabCoin.append([])
+        
+    tabCoin[0].extend((data[0][0], data[1][6], data[2][2])) 
+    tabCoin[1].extend((data[0][2], data[1][8], data[4][0]))
+    tabCoin[2].extend((data[0][6], data[2][8], data[3][0]))
+    tabCoin[3].extend((data[0][8], data[3][2], data[4][6]))
+    tabCoin[4].extend((data[3][8], data[4][8], data[5][6])) 
+    tabCoin[5].extend((data[1][2], data[4][2], data[5][0]))
+    tabCoin[6].extend((data[1][0], data[2][0], data[5][2]))
+    tabCoin[7].extend((data[2][6], data[3][6], data[5][8]))
+    return tabCoin
 
 
 def voisinHaut(i):
@@ -194,24 +246,78 @@ def draw2(data):
     m = 6
    
     color_center = []
-    tabCoin = []
+    tabPref = [] #tableau qui va stocker toutes les moyennes des coins a chaque triplet centre
+    coinPref = [] # tableau qui va stocker pour chaque coin le triplet centre qui lui correspond le plus par rapport a la moyenne des rgb
+    tabCoin = tabCoinCouleur(data)
     tab_coeff = {}
     for k in range(0,6):
       color_center.append([])
+    for k in range(0,6):  
+        tabPref.append([])
+    
+    tabCoinCheck = couleurCoin(data)
+
+
+    for i in range(0, len(tabCoin)): #parcours tous les coin 
+        for j in range(0,len(tabCoinCheck)): #parcours tous les triplets de couleurs des centre a comparer
+            print tabCoin[i], "    " , tabCoinCheck[j]
+            t, tt = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[j])
+            tabPref[i].append(t)
+
+    for i in range(0, len(tabPref)):
+        coinPref.append( choixMeileurCentre(tabPref[i]) )
+
+    tabFinal = []
+    for i in range(0,len(tabCoin)):
+        indice = coinPref[i][1]
+        tabFinal = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[indice])
+
+    tabFigure = [f, g, h, j ,k, l, m, n]
+    for i in range(1,len(tabFigure)+1):
+        tabFigure[i] = plt.figure(i)
+        for xx in range(0,3):
+            plt.scatter(xx, 0, s=800, marker='o', c=tabCoinCheck[i][xx])
+            plt.scatter(xx, 10, s=800, marker='o', c=tabFinal[i][xx])
+
+    plt.show()
+
+    """
+    f = plt.figure(1)
+
+    #for j in range (0,8):
+    for i in range(0,3):
+        plt.scatter(i, 0, s=800, marker='o', c=tabCoinCheck[0][i])
+        plt.scatter(i, 10, s=800, marker='o', c=tabaffiche[i])
+    
+    plt.scatter(x, y, s=800, marker='s', c=color)
+    plt.title('Rubik\'s cube unfolding')
+    plt.axis('off')
+    plt.savefig('unfolding.png')
       
 
-    for k in range(0,8):
-        tabCoin.append([])
-
-    tabCoin[0].append(data[0][0]) 
-    tabCoin[0].append(data[1][6])
-    tabCoin[0].append(data[2][2])
-    tabCoin[1].extend((data[0][2], data[1][8], data[4][0]))
-    tabCoin[2].extend((data[0][6], data[2][8], data[3][0]))
-    tabCoin[3].extend((data[0][8], data[3][2], data[4][6]))
+    g = plt.figure(2)
+    plt.scatter(x, y, s=800, marker='s', c=color)
+    
+    plt.show()
+    """
+    # CA OUVRE 2 FENETRE YOUPI
 
 
-    tabCoinCheck = couleurCoin(data)
+# retourne la difference la plus petite et l indice du triplet centre associe
+def choixMeilleurCentre(tabPref):
+    min = 256
+    indice = -1
+    for i in range(0, len(tabPref)):
+        if min > tabPref[i]:
+            min = tabPref[i]
+            indice = i
+    return tabPref[indice], indice
+
+
+# retourne la difference la plus petite et l'arangement de couleur qui lui correspond
+# entre les couleurs des centres et les couleurs des coins
+def choixPlusPetiteDiff(tabCoin, tabCoinCheck):
+
     tabdiffFinal = []
     for i in range(0,1):
         tabC = []
@@ -248,33 +354,16 @@ def draw2(data):
             tabC[indice][0] = 256 
             tabC[indice][1] = 256 
             tabC[indice][2] = 256 
-    
+    """
     for i in range(0,len(tabaffiche)):
         tabaffiche[i] = rgb255to01(tabaffiche[i],68)
-        tabCoinCheck[0][i] = rgb255to01(tabCoinCheck[0][i],68)
+        #tabCoinCheck[0][i] = rgb255to01(tabCoinCheck[0][i],68)
     print tabdiffFinal
-
-    f = plt.figure(1)
-
-    #for j in range (0,8):
-    for i in range(0,3):
-        plt.scatter(i, 0, s=800, marker='o', c=tabCoinCheck[0][i])
-        plt.scatter(i, 10, s=800, marker='o', c=tabaffiche[i])
     """
-    plt.scatter(x, y, s=800, marker='s', c=color)
-    plt.title('Rubik\'s cube unfolding')
-    plt.axis('off')
-    plt.savefig('unfolding.png')
-    """  
-
-    g = plt.figure(2)
-    plt.scatter(x, y, s=800, marker='s', c=color)
-    
-    plt.show()
-
-    # CA OUVRE 2 FENETRE YOUPI
-
-
+    somme = 0
+    for i in range (0, len(tadDiffFinal)):
+        somme = tabDiffFinal[i]
+    return round(somme)/3, tabaffiche
 
 def moyenneRGB(c1, c2):
     r1 = abs(c1[0] - c2[0])
