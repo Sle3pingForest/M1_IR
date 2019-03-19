@@ -258,12 +258,24 @@ def draw2(data):
     tabCoinCheck = couleurCoin(data)
 
 
+    # stocke les moyennes des differences les plus basses pour chaque coin centre
     for i in range(0, len(tabCoin)): #parcours tous les coin 
         for j in range(0,len(tabCoinCheck)): #parcours tous les triplets de couleurs des centre a comparer
             #print tabCoin[i], "    " , tabCoinCheck[j]
             t, tt = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[j])
             tabPref[i].append(t)
 
+
+
+
+
+            
+    for i in range(0, len(tabPref)):
+        print tabPref[i]
+
+
+
+            
     for i in range(0, len(tabPref)):
         coinPref.append( choixMeilleurCentre(tabPref[i]) )
 
@@ -345,7 +357,7 @@ def choixPlusPetiteDiff(tabCoin, tabCoinCheck):
         tabC[2].append(moyenneRGB(tabCoin[2] , tabCoinCheck[0]))
         tabC[2].append(moyenneRGB(tabCoin[2] , tabCoinCheck[1]))
         tabC[2].append(moyenneRGB(tabCoin[2] , tabCoinCheck[2]))
-        print " debut   "
+        #print " debut   "
 
         tabaffiche = []
         for j in range(0,3):
@@ -358,10 +370,10 @@ def choixPlusPetiteDiff(tabCoin, tabCoinCheck):
                 if min > tabC[i][j]:
                     min = tabC[i][j]
                     indice = i
-                    print " min " , min
+                   
             tabdiffFinal.append(tabC[indice][j])
             tabaffiche.append(tabCoin[indice])
-            print tabCoinCheck , "      " , tabC[indice][j] , "    " , j , "   " , tabCoin[indice]
+            #print tabCoinCheck , "      " , tabC[indice][j] , "    " , j , "   " , tabCoin[indice]
             tabC[indice][0] = 256 
             tabC[indice][1] = 256 
             tabC[indice][2] = 256
@@ -371,11 +383,13 @@ def choixPlusPetiteDiff(tabCoin, tabCoinCheck):
         #tabCoinCheck[0][i] = rgb255to01(tabCoinCheck[0][i],68)
     print tabdiffFinal
     """
-    print " \n saut \n" 
+    #print "\n saut \n" 
     somme = 0
     for i in range (0, len(tabdiffFinal)):
         somme = tabdiffFinal[i]
-    return round(somme)/3, tabaffiche
+    return round( round(somme)/3, 2), tabaffiche
+
+
 
 def moyenneRGB(c1, c2):
     r1 = abs(c1[0] - c2[0])
@@ -384,7 +398,7 @@ def moyenneRGB(c1, c2):
 
     b1 = abs(c1[2] - c2[2])
 
-    return (r1+g1+b1)/3
+    return round( (r1+g1+b1)/3 , 2)
 
 def rgb255to01(c1,div):
     c1[0] = round(c1[0])/div
@@ -394,7 +408,7 @@ def rgb255to01(c1,div):
 
 
 def t255to01(c1,div):
-    return  round(c1[0])/div,  round(c1[0])/div,  round(c1[0])/div
+    return  round(c1[0],2)/div,  round(c1[0],2)/div,  round(c1[0],2)/div
 
 def calculDiffColorRGB(c1, c2):
 
@@ -439,5 +453,17 @@ draw2(data)
 [52, 60, 62]
 [24, 29, 40]
 [15, 41, 40]
+
+
+[1.67, 14.33, 7.67, 14.33, 4.0, 16.33, 17.67, 16.33]
+[7.33, 6.67, 8.0, 6.67, 3.67, 15.67, 7.0, 15.67]
+[2.0, 14.67, 7.67, 14.67, 3.67, 16.0, 17.33, 16.0]
+[6.33, 7.33, 7.67, 7.33, 4.0, 16.33, 8.33, 16.33]
+[6.33, 7.67, 8.0, 7.67, 6.67, 10.33, 11.67, 10.33]
+[6.67, 7.33, 8.67, 7.33, 6.33, 11.0, 12.33, 11.0]
+[6.0, 11.67, 12.67, 11.67, 1.67, 14.33, 12.67, 14.33]
+[6.67, 10.67, 7.67, 10.67, 2.33, 15.0, 12.0, 15.0]
+
+
 
 """
