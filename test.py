@@ -16,6 +16,7 @@ This code draws Rubik's cube unfoldings with raw RGB data
 
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
@@ -29,11 +30,7 @@ def couleurCoin(data):
     tab = []
     for i in range(0,8):
         tab.append([])
-    """
-    tab[0].append(data[0][4])
-    tab[0].append(data[1][4])
-    tab[0].append(data[2][4])
-    """
+
     tab[0].extend((data[0][4], data[1][4] , data[2][4]))
     tab[1].extend((data[0][4], data[1][4] , data[4][4]))
     tab[2].extend((data[0][4], data[2][4] , data[3][4]))
@@ -145,7 +142,7 @@ def donnees(data):
 
 
     
-# draw the unfolding / TA PARTIE A FINIR NAM GROSAc
+# draw the unfolding / TA PARTIE A FINIR NAM
 def draw(data):
     x, y, color, c, max_color = donnees(data)
    
@@ -262,33 +259,49 @@ def draw2(data):
     for i in range(0, len(tabCoin)): #parcours tous les coin 
         for j in range(0,len(tabCoinCheck)): #parcours tous les triplets de couleurs des centre a comparer
             #print tabCoin[i], "    " , tabCoinCheck[j]
-            t, tt = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[j])
+            t, tt, indice = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[j])
             tabPref[i].append(t)
-
-            
-    for i in range(0, len(tabPref)):
-        print tabPref[i]
-
-
 
             
     for i in range(0, len(tabPref)):
         coinPref.append( choixMeilleurCentre(tabPref[i]) )
 
     tabFinal = []
+    tabIndice = []
+    
     for i in range(0,len(tabCoin)):
+        tabIndice.append( coinPref[i][1])
         indice = coinPref[i][1]
-        t , tt = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[indice])
-        tabFinal.append( tt  ) 
+        t , tt, ttt= choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[indice])
+        tabFinal.append( tt )
 
+    nb_erreur = 0
+    for i in range(0, len(tabIndice)):
+        if tabIndice[i] != data_coin_ok[i][1]:
+            nb_erreur += 1
+
+    print float(nb_erreur)/8 *100 , "% d erreur  " ,   nb_erreur , "   sur " , len(tabCoin)
+    
     copieCheck = tabCoinCheck
     tabFigure = ['f', 'g', 'h', 'j' ,'k', 'l', 'm', 'n']
 
     #print " association " , tabFinal
-   # print " coin centre " , copieCheck
+    # print " coin centre " , copieCheck
+   
+    plt.figure(0)
+    
+    decalage = 0
     for i in range(0,len(tabFigure)):
-        plt.figure(i+1)
-        
+
+        for j in range(0,3):
+            couleurTabCoin = [ round( tabCoin[i][j][0] )/68 , round( tabCoin[i][j][1])/68 , round( tabCoin[i][j][2])/68 ]
+            couleurCentreAssocie = [ round( tabCoinCheck[ tabIndice[i] ][j][0])/68 , round( tabCoinCheck[ tabIndice[i] ][j][1])/68 , round( tabCoinCheck[ tabIndice[i] ][j][2])/68  ]
+            if j == 0:
+                decalage += 5
+            plt.scatter(i*3+j + decalage, 0, s=800, marker='o', c= couleurCentreAssocie )
+            plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurTabCoin )
+
+        """
         for j in range(0,3):
             t = [round(copieCheck[i][j][0])/68 , round(copieCheck[i][j][1])/68, round(copieCheck[i][j][2])/68 ]
             #print t
@@ -296,8 +309,11 @@ def draw2(data):
             #print tt
             plt.scatter(j, 0, s=800, marker='o', c= t )
             plt.scatter(j, 10, s=800, marker='o', c= tt )
+        """
+        
+    plt.savefig('tri_coin.png')
     plt.show()
-
+    
     """
     f = plt.figure(1)
 
@@ -342,13 +358,6 @@ def draw3(data):
             #print tabCoin[i], "    " , tabCoinCheck[j]
             t, tt = choixPlusPetiteDiffDoublons(tabCoin[i], tabCoinCheck[j])
             tabPref[i].append(t)
-
-            
-    for i in range(0, len(tabPref)):
-        print tabPref[i]," coucou"
-
-
-
             
     for i in range(0, len(tabPref)):
         coinPref.append( choixMeilleurCentre(tabPref[i]) )
@@ -363,7 +372,8 @@ def draw3(data):
     tabFigure = ['f', 'g', 'h', 'j' ,'k', 'l', 'm', 'n']
 
     #print " association " , tabFinal
-   # print " coin centre " , copieCheck
+    # print " coin centre " , copieCheck
+
     for i in range(0,12):
         plt.figure(i+1)
         
@@ -375,9 +385,77 @@ def draw3(data):
             #print tt
             plt.scatter(j, 0, s=800, marker='o', c= t )
             plt.scatter(j, 10, s=800, marker='o', c= tt )
-    #plt.show()
+    plt.show()
+
+
+
+# draw the unfolding
+def draw_rgb_debut(data):
+    x, y, color, c, max_color = donnees(data)
+   
+    n = 9
+    m = 6
+    #color_center = [[] * 54] * 6
+    color_center = []
+    for k in range(0,6):
+      color_center.append([])
+   
+    cccc = []
+    
+    compteur = 0
+    
+    for s, side in enumerate(data):
+        for f, (r,g,b) in enumerate(side):
+	  indice = 0
+	  min_color = max_color
+	  size = len(c)
+	  for i in range(0,size):
+	    rr = abs(r - c[i][0])
+	    gg = abs(g - c[i][1])
+	    bb = abs(b - c[i][2])
+	    if (min_color > ((rr +gg+bb)/3) ):
+	     min_color = (rr +gg+bb)/3
+	     indice = i
+	  #print indice
+	  color_center[indice].append( [r,g,b] )
+	   #print ' JESUIS FACE ' , s , ' EN FACET ', f , ' JAJOUTE DANS ' , indice , ' COMPTEUR ' , compteur
+	   #print color_center[indice]
+
+
+
+    nb_erreur = 0
+    for i in range(0, len(color_center)):
+        for j in range (0, len(color_center[i])):
+            dedans = False
+            for k in range(0, len(data[i])):
+                if sameColor( color_center[i][j], data[i][k]):
+                   dedans = True
+            if dedans == False:
+                nb_erreur += 1
+
+    print float(nb_erreur)/54 *100 , "% d erreur  " ,   nb_erreur , "   sur " , 54
+
+           
+    for i in range(0,len(color_center) ):
+        
+      print ' COULEUR SIDE ',  c[i], '  liste facet: ', color_center[i], '\n'
+      tabColor = []
+      for j in range (0 , len(color_center[i])):
+            plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  rgb255to01(color_center[i][j], 68) )
+            plt.scatter(i, 0, s=800, marker='o', c= t255to01(c[i],68) )
+    """
+    plt.scatter(x, y, s=800, marker='s', c=color)
+    plt.title('Rubik\'s cube unfolding')
+    plt.axis('off')
+    plt.savefig('unfolding.png')
+    """
+    plt.show()    
+
 
 ###########################
+
+def sameColor(c1, c2):
+    return c1[0] == c2[0] and c1[1] == c2[1] and c1[2] == c2[2]
 
 # retourne la difference la plus petite et l indice du triplet centre associe
 def choixMeilleurCentre(tabPref):
@@ -413,7 +491,7 @@ def choixPlusPetiteDiff(tabCoin, tabCoinCheck):
         tabC[2].append(moyenneRGB(tabCoin[2] , tabCoinCheck[1]))
         tabC[2].append(moyenneRGB(tabCoin[2] , tabCoinCheck[2]))
         #print " debut   "
-
+        indice = 0
         tabaffiche = []
         for j in range(0,3):
             
@@ -428,22 +506,15 @@ def choixPlusPetiteDiff(tabCoin, tabCoinCheck):
                    
             tabdiffFinal.append(tabC[indice][j])
             tabaffiche.append(tabCoin[indice])
-            #print tabCoinCheck , "      " , tabC[indice][j] , "    " , j , "   " , tabCoin[indice]
             tabC[indice][0] = 256 
             tabC[indice][1] = 256 
             tabC[indice][2] = 256
 
-    """
-    for i in range(0,len(tabaffiche)):
-        tabaffiche[i] = rgb255to01(tabaffiche[i],68)
-        #tabCoinCheck[0][i] = rgb255to01(tabCoinCheck[0][i],68)
-    print tabdiffFinal
-    """
     #print "\n saut \n" 
     somme = 0
     for i in range (0, len(tabdiffFinal)):
         somme = tabdiffFinal[i]
-    return round( round(somme)/3, 2), tabaffiche
+    return round( round(somme)/3, 2), tabaffiche, indice
 
 
 def choixPlusPetiteDiffDoublons(tabCoin, tabCoinCheck):
@@ -492,7 +563,7 @@ def moyenneRGB(c1, c2):
 
     b1 = abs(c1[2] - c2[2])
 
-    return round( (r1+g1+b1) , 2)
+    return round( (r1+g1+b1)/3 , 2)
 
 def rgb255to01(c1,div):
     c1[0] = round(c1[0])/div
@@ -502,7 +573,9 @@ def rgb255to01(c1,div):
 
 
 def t255to01(c1,div):
-    return  round(c1[0],2)/div,  round(c1[0],2)/div,  round(c1[0],2)/div
+    color = []
+    color.append( [ round(c1[0])/div,  round(c1[1])/div,  round(c1[2])/div ] )
+    return  color
 
 def calculDiffColorRGB(c1, c2):
 
@@ -516,8 +589,17 @@ def calculDiffColorRGB(c1, c2):
     b2 = c2[2]/ (c2[0]+c2[1]+c2[2])
     return abs(r1-r2), abs(g1-g2),abs(b1-b2)
 
+def compare2Couleur(c1 , c2):
+    r1 = abs(c1[0] - c2[0])
+
+    g1 = abs(c1[1] - c2[1])
+
+    b1 = abs(c1[2] - c2[2])
+
+    return round(math.sqrt(r1*r1+g1*g1+b1*b1) , 2)
 
 
+"""
 data = [
 [[22, 7, 5],[4, 6, 8],[5, 7, 9],[3, 5, 8],[4, 6, 9],[3, 5, 7],[4, 6, 7],[4, 6, 8],[3, 4, 7]],
 [[31, 35, 29],[46, 52, 38],[35, 40, 33],[44, 48, 36],[59, 68, 45],[45, 50, 37], [3, 5, 6],[47, 51, 38],[36, 42, 33]],
@@ -526,7 +608,16 @@ data = [
 [[24, 36, 41],[33, 44, 49],[24, 34, 38],[29, 43, 44],[43, 61, 59],[28, 42, 44],[25, 38, 42],[33, 46, 48],[24, 35, 41]],
 [[9, 24, 29],[11, 31, 34],[8, 23, 27],[13, 32, 34],[15, 41, 40],[12, 31, 33],[11, 27, 31],[13, 34, 34],[10, 26, 30]]
 ]
+"""
 
+data = [
+[[3, 5, 6],[4, 6, 8],[5, 7, 9],[3, 5, 8],[4, 6, 9],[3, 5, 7],[4, 6, 7],[4, 6, 8],[3, 4, 7]],
+[[31, 35, 29],[46, 52, 38],[35, 40, 33],[44, 48, 36],[59, 68, 45],[45, 50, 37],[34, 39, 31],[47, 51, 38],[36, 42, 33]],
+[[21, 8, 5],[28, 8, 5],[22, 7, 5],[25, 9, 4],[32, 12, 6],[24, 8, 4],[17, 7, 4],[27, 9, 4],[19, 7, 5]],
+[[28, 33, 42],[35, 40, 47],[26, 32, 39],[37, 42, 47],[52, 60, 62],[34, 40, 48],[27, 34, 42],[34, 40, 45],[24, 29, 40]],
+[[24, 36, 41],[33, 44, 49],[24, 34, 38],[29, 43, 44],[43, 61, 59],[28, 42, 44],[25, 38, 42],[33, 46, 48],[24, 35, 41]],
+[[9, 24, 29],[11, 31, 34],[8, 23, 27],[13, 32, 34],[15, 41, 40],[12, 31, 33],[11, 27, 31],[13, 34, 34],[10, 26, 30]]
+]
 
 data_turned = [
 [[4, 4, 8],[4, 5, 8],[4, 6, 8],[3, 5, 7],[5, 7, 9],[3, 6, 7],[3, 5, 8],[4, 5, 7],[4, 5, 8]],
@@ -536,10 +627,71 @@ data_turned = [
 [[38, 44, 35],[35, 48, 50],[27, 32, 43],[48, 54, 39],[47, 64, 62],[36, 43, 48],[41, 46, 37],[35, 48, 48],[30, 35, 44]],
 [[11, 29, 32],[13, 32, 34],[9, 25, 29],[12, 33, 33],[16, 42, 41],[10, 33, 34],[11, 30, 32],[13, 33, 34],[10, 28, 30]],
 ]
-draw3(data)
-#draw(data_turned)
 
-""" 
+data_coin_ok = [
+    [0,0], [1,1], [2,2], [3,3], [4,4], [5,5], [6,6], [7,7], [8,8]
+]
+
+draw3(data)
+#draw(data)
+
+
+
+
+
+"""
+tabDiffEucl = []
+for i in range(0,8):
+    tabDiffEucl.append([])
+min = 256
+indiceI  = -1
+indiceJ = -1
+temp = 255
+for i in range (0,len(data)):
+    print "face : ",i
+    min = 256
+    for j in range (0,len(data[0])):
+        for k in range (0,6):
+            if j!= 4 :
+                temp = compare2Couleur(data[i][j],data[k][4])
+                tabDiffEucl[i].append(temp)
+                if min > temp :
+                    #print"COUCOU"
+                    min = temp
+                    
+                    indiceK = k
+                indiceI = i
+                indiceJ = j
+                
+            #print i , j ,": ", i , k," (i j) " , " i k"
+            #print temp
+        print tabDiffEucl[i]
+        #print "min : ", min ,"cote : ",indiceI,indiceJ , "centre : ", indiceK,4
+    #print "face : ",i
+    
+    print "\n"
+
+"""
+            
+"""
+c1 =[3, 5, 6]
+c2 = [4, 6, 8]
+test = compare2Couleur(c1, c2)
+print test
+"""
+"""
+c1 =[59, 68, 45]
+c2 =[31, 35, 29]
+test = compare2Couleur(c1, c2)
+print test
+
+
+c1 =[38, 43, 47]
+c2 =[31, 35, 29]
+test = compare2Couleur(c1, c2)
+print test
+
+
 16  [34, 39, 31]
 00 [3, 5, 6]
 22 [22, 7, 5]
