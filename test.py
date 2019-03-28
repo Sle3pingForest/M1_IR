@@ -340,8 +340,8 @@ def draw2(data):
 def draw3(data):
     x, y, color, c, max_color = donnees(data)   
     color_center = []
-    tabPref = [] #tableau qui va stocker toutes les moyennes des coins a chaque triplet centre
-    coinPref = [] # tableau qui va stocker pour chaque coin le triplet centre qui lui correspond le plus par rapport a la moyenne des rgb
+    tabPref = [] 
+    coinPref = [] 
     tabCoin = tabAreteCouleur(data)
     tab_coeff = {}
     for k in range(0,6):
@@ -531,7 +531,7 @@ def choixPlusPetiteDiffDoublons(tabCoin, tabCoinCheck):
        
         tabC[1].append(moyenneRGB(tabCoin[1] , tabCoinCheck[0]))
         tabC[1].append(moyenneRGB(tabCoin[1] , tabCoinCheck[1]))
-        print "couleur   : ",  tabCoin , "    tabcoincheck   "   , tabCoinCheck[0] ,  "  " ,tabCoinCheck[1] , "    valeur diff     ", tabC[0]    , "  camembert           " ,   tabC[1]
+        #print "couleur   : ",  tabCoin , "    tabcoincheck   "   , tabCoinCheck[0] ,  "  " ,tabCoinCheck[1] , "    valeur diff     ", tabC[0]    , "  camembert           " ,   tabC[1]
         tabaffiche = []
         for j in range(0,2):
             
