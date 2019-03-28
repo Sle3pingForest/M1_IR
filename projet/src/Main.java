@@ -31,8 +31,8 @@ enum Orient {
 	SE(9, 8, -45),
 	S (8, 7, -45),
 	SW(7, 4, -45),//7,4,-44
-	//W (4, 5, -1),
-	W (4, 5, -45),
+	W (4, 5, -1),
+	//W (4, 5, -45),
 	C (5, 1, -45)
 	;
 
@@ -201,10 +201,11 @@ public class Main {
 	public Main() throws IOException {
 		//for (int i = 0; i < 10; i++)
 		//flipCube();
-		/*motorCol.moveDegree(180, 720);
-		motorCol.moveDegree(-90, 720);*/
+		motorCol.moveDegree(0, 700);
 		motorCol.setAbsolute();
 		scan();
+		motorCol.moveDegree(0, 700);
+		//motorCol.moveDegree(-600, 700);
 	}
 
 	public void scan() throws IOException {
@@ -218,6 +219,9 @@ public class Main {
 				res.put(new Integer(face.value +""+ this.orientation.value), c);
 			}
 			motorCol.moveDegree(0, 700);
+			
+			
+			
 		}
 		StringBuilder donnee = new StringBuilder("");
 		donnee.append("data = [");
@@ -231,7 +235,7 @@ public class Main {
 			donnee.append("\n],");
 		}
 		donnee.append("]");
-		BufferedWriter writer = new BufferedWriter(new FileWriter("data2.txt"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter("data_sombre2.txt"));
 	    writer.write(donnee.toString());
 	     
 	    writer.close();
@@ -282,8 +286,10 @@ public class Main {
 		motorFlip.moveDegree(120, 100);
 	}
 
+	// 
 	void flipCube(){
 		motorCol.moveDegree(0, 700);
+		//motorCol.moveDegree(0, 700);
 		//motorCol.moveDegree(0, 0);
 		
 		Flip flp = Flip.getFlipResult(this.face, this.orientation);
@@ -307,6 +313,7 @@ public class Main {
 	
 	}
 
+	// VA ERT VIENS POUR LIRE LES 9 FACET
 	Color readColor(){
 		//System.out.println("Reading: "+ this.face.name() +" "+ this.orientation.name());
 		
@@ -314,13 +321,15 @@ public class Main {
 		int angle = 0;
 
 		if (orientation.value == 5) {
+			//angle = 600;
 			angle = 600;
 		} else if (orientation.value % 2 == 0){
-			angle = 500;
+			angle = 450;
+			//angle = 500;
 			
 		} else {
-			angle = 430;
-			
+			angle = 450;
+			//angle = 430;
 		} 
 
 		motorCol.moveDegree(-angle, 700);

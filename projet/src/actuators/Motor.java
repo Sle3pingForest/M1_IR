@@ -8,7 +8,7 @@ public class Motor {
 	double tachosPerCM = 0;
 	
 	boolean absolute = false;
-	int currentPos = 0;
+	public int currentPos = 0;
 	
 	public Motor(String port){
 		switch(port){
