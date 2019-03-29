@@ -311,7 +311,7 @@ def draw2(data):
             plt.scatter(j, 10, s=800, marker='o', c= tt )
         """
         
-    plt.savefig('tri_coin.png')
+    #plt.savefig('tri_coin.png')
     plt.show()
     
     """
@@ -555,6 +555,38 @@ def choixPlusPetiteDiffDoublons(tabCoin, tabCoinCheck):
         print tabdiffFinal[i]," tabdiffFinal  : ",i
     return round( round(somme)/2, 2), tabaffiche
 
+#parcours et choisit pour chaque centre le triplet le plus ressemblant (rgb)
+def repartition(tabPref):
+    
+    tab = []
+    # parcours les colonnes pour chaque coin des centres
+    for i in range(0, len(tabPref[0])):
+        
+        min = 256
+        indice = 0
+        #parcours les lignes pour choisir le plus mieux de lindice i
+        for j in range(0, len(tabPref)):
+            
+            if tabPref[j][i] < min:
+                min = tabPref[j][i]
+                indice = i
+        tab.append(min)
+        
+        
+
+"""
+
+je recupere la plus petite difference pour chaque coin centre
+
+je compare et recupere le plus petit des 8 differences et son indice
+
+jassocie le triplet au coin centre et je modifie toutes les valeurs a cet indice a un max
+
+je refais la meme jusqua avoir tout comparé
+
+"""
+
+    
 
 def moyenneRGB(c1, c2):
     r1 = abs(c1[0] - c2[0])
@@ -629,10 +661,14 @@ data_turned = [
 ]
 
 data_coin_ok = [
-    [0,0], [1,1], [2,2], [3,3], [4,4], [5,5], [6,6], [7,7], [8,8]
+    [0,0], [1,1], [2,2], [3,3], [4,4], [5,5], [6,6], [7,7]
 ]
 
-draw3(data)
+data_turned_coin_ok = [
+    [0,2], [1,0], [2,3], [3,1], [4,6], [5,4], [6,7], [7,5]
+]
+
+draw2(data)
 #draw(data)
 
 
