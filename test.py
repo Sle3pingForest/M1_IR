@@ -17,6 +17,11 @@ This code draws Rubik's cube unfoldings with raw RGB data
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+from data.data3 import data3
+from data.data_lumiere import data_lumiere
+from data.data_lumiere2 import data_lumiere2
+from data.data_sombre import data_sombre
+from data.data_sombre2 import data_sombre2
 
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
@@ -313,6 +318,13 @@ def draw2(data):
         
     #plt.savefig('tri_coin.png')
     plt.show()
+
+
+    datas = [data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
+    datas.append(data3)
+    datas.append(data_lumiere)
+    datas.append(data_lumiere)
+    showData(datas,True)
     
     """
     f = plt.figure(1)
@@ -451,6 +463,29 @@ def draw_rgb_debut(data):
     """
     plt.show()    
 
+"""
+a utiliser sur un rubik resolu
+compare les facet avec le centre associé et calcul
+l ecart de couleur du aux problemes mecaniques du robot
+qui capte les facet a une hauteur differente
+"""
+def calculEcartAvecCentre(data):
+    diff = []
+    for i in range(0,6):
+        diff.append([data[i][4]])
+    
+    for s, side in enumerate(data):
+        for f, (r,g,b) in enumerate(side):
+            if f != 4:
+                diffR = abs(diff[side][0][0] - r)
+                diffG = abs(diff[side][0][1] - g)
+                diffB = abs(diff[side][0][2] - b)
+                diff.append([diffR, diffG, diffB])
+    return diff
+
+
+
+
 
 ###########################
 
@@ -555,6 +590,24 @@ def choixPlusPetiteDiffDoublons(tabCoin, tabCoinCheck):
         print tabdiffFinal[i]," tabdiffFinal  : ",i
     return round( round(somme)/2, 2), tabaffiche
 
+def showData(data, plusieurs=False):
+
+
+    taille = 0
+    # if true there is many array of data
+    if plusieurs == True:
+        taille = len(data)
+    elif len(data) != 0:
+        taille = 1
+    for i in range(0, taille):
+        
+        x, y, color, c, max_color = donnees(data[i])
+        plt.figure(i)
+        plt.axis('off')
+        plt.scatter(x, y, s=800, marker='s', c=color)
+    plt.show()
+
+
 #parcours et choisit pour chaque centre le triplet le plus ressemblant (rgb)
 def repartition(tabPref):
     
@@ -575,15 +628,10 @@ def repartition(tabPref):
         
 
 """
-
 je recupere la plus petite difference pour chaque coin centre
-
 je compare et recupere le plus petit des 8 differences et son indice
-
 jassocie le triplet au coin centre et je modifie toutes les valeurs a cet indice a un max
-
-je refais la meme jusqua avoir tout comparé
-
+je refais la meme jusqua avoir tout compare
 """
 
     
