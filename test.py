@@ -273,6 +273,16 @@ def draw2(data):
 
     tabFinal = []
     tabIndice = []
+
+
+    test_coin = repartition(tabPref)
+
+    nb_erreur = 0
+    for i in range(0, len(test_coin)):
+        if test_coin[i] != data_coin_ok[i][1]:
+            nb_erreur += 1
+
+    print float(nb_erreur)/8 *100 , "% d erreur  " ,   nb_erreur , "   sur " , len(test_coin)
     
     for i in range(0,len(tabCoin)):
         tabIndice.append( coinPref[i][1])
@@ -321,10 +331,7 @@ def draw2(data):
 
 
     datas = [data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
-    datas.append(data3)
-    datas.append(data_lumiere)
-    datas.append(data_lumiere)
-    showData(datas,True)
+    #showData(datas,True)
     
     """
     f = plt.figure(1)
@@ -465,7 +472,7 @@ def draw_rgb_debut(data):
 
 """
 a utiliser sur un rubik resolu
-compare les facet avec le centre associé et calcul
+compare les facet avec le centre associe et calcul
 l ecart de couleur du aux problemes mecaniques du robot
 qui capte les facet a une hauteur differente
 """
@@ -502,6 +509,8 @@ def choixMeilleurCentre(tabPref):
             indice = i
     return tabPref[indice], indice
 
+
+    
 
 # retourne la difference la plus petite et l'arangement de couleur qui lui correspond
 # entre les couleurs des centres et les couleurs des coins
@@ -611,22 +620,75 @@ def showData(data, plusieurs=False):
 #parcours et choisit pour chaque centre le triplet le plus ressemblant (rgb)
 def repartition(tabPref):
     
-    tab = []
-    # parcours les colonnes pour chaque coin des centres
-    for i in range(0, len(tabPref[0])):
-        
-        min = 256
-        indice = 0
-        #parcours les lignes pour choisir le plus mieux de lindice i
-        for j in range(0, len(tabPref)):
+    fini = False
+    tabFinal = [-1] * len(tabPref)
+    compt = 0
+    tabChoix = [0] * len(tabPref)
+    while fini == False:
+        tab = []
+        for i in range(0, len(tabPref)):
+            tab.append([])
+        tabCount = [0] * len(tabPref)
+        # parcours les colonnes pour chaque coin des centres
+        for i in range(0, len(tabPref[0])):
             
-            if tabPref[j][i] < min:
-                min = tabPref[j][i]
-                indice = i
-        tab.append(min)
-        
-        
+            min = 256
+            indicelig = 0
+            #parcours les lignes pour choisir le plus mieux de lindice i
+            for j in range(0, len(tabPref)):
+            
+                if tabPref[j][i] < min:
+                    min = tabPref[j][i]
+                    indicelig = j
+            tab[indicelig].append( [min, i , indicelig] )
+            tabCount[indicelig] += 1
 
+
+        for i in range(0, len(tabCount)):
+            #si je nai pas attribue de coin a celui que je check
+            if tabFinal[i] == -1:
+                # si il a un seul meilleur coin et que le coin centre n a pas ete attribue
+                if tabCount[i] == 1 and tabChoix[ tab[i][0][1] ] == 0:
+                    indicecol = tab[i][0][1]
+                    #jenleve la ligne et la colonne du coin que jai check 
+                    # et jattribue dans les tableaux
+                    for j in range(0, len(tabPref[0])):
+                        tabPref[i][j] = 256
+                    for k in range(0, len(tabPref)):
+                        tabPref[k][indicecol] = 256
+                    tabFinal[i] = tab[i][0][1]
+                    tabChoix[ tabFinal[i] ] = 1
+                        
+                #si il a plus d un meilleur
+                elif tabCount[i] > 1:
+                    indicecol = 0
+                    min = 256 
+                    indice = 0
+                    #je choisis le plus petit
+                    for k in range(0, len(tab[i])):
+                        if tab[i][k][0] < min:
+                            min = tab[i][k][0]
+                            indicecol = tab[i][k][1]
+                            indice = k
+                            
+                            #et si le coin centre n a pas ete attribue
+                    if tabChoix[ tab[i][indice][1] ] == 0:
+                        #jenleve la ligne et la colonne du coin que jai check 
+                        # et jattribue dans les tableaux
+                        for j in range(0, len(tabPref[0])):
+                            tabPref[i][j] = 256   
+                        for k in range(0, len(tabPref)):
+                            tabPref[k][indicecol] = 256
+                        tabFinal[i] = tab[i][indice][1]
+                        tabChoix[ tabFinal[i] ] = 1
+        
+        #si tous les coin ont ete attribue a un coin centre je sors
+        fini = True
+        for i in range(0, len(tabFinal)):
+            if tabFinal[i] == -1:
+                fini = False
+    return tabFinal
+  
 """
 je recupere la plus petite difference pour chaque coin centre
 je compare et recupere le plus petit des 8 differences et son indice
