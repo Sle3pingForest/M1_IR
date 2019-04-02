@@ -201,10 +201,10 @@ public class Main {
 	public Main() throws IOException {
 		//for (int i = 0; i < 10; i++)
 		//flipCube();
-		motorCol.moveDegree(0, 700);
+		//motorCol.moveDegree(-200, 700);
 		motorCol.setAbsolute();
 		scan();
-		motorCol.moveDegree(0, 700);
+		//motorCol.moveDegree(0, 700);
 		//motorCol.moveDegree(-600, 700);
 	}
 
@@ -218,7 +218,7 @@ public class Main {
 				Color c = readColor();
 				res.put(new Integer(face.value +""+ this.orientation.value), c);
 			}
-			motorCol.moveDegree(0, 700);
+			motorCol.moveDegree(0, 720);
 			
 			
 			
@@ -288,9 +288,7 @@ public class Main {
 
 	// 
 	void flipCube(){
-		motorCol.moveDegree(0, 700);
-		//motorCol.moveDegree(0, 700);
-		//motorCol.moveDegree(0, 0);
+		motorCol.moveDegree(0, 720);
 		
 		Flip flp = Flip.getFlipResult(this.face, this.orientation);
 		
@@ -321,18 +319,15 @@ public class Main {
 		int angle = 0;
 
 		if (orientation.value == 5) {
-			//angle = 600;
 			angle = 600;
 		} else if (orientation.value % 2 == 0){
-			angle = 450;
-			//angle = 500;
+			angle = 380;
 			
 		} else {
-			angle = 450;
-			//angle = 430;
+			angle = 340;
 		} 
 
-		motorCol.moveDegree(-angle, 700);
+		motorCol.moveDegree(-angle, 720);
 		c = colorSensor.getColor();
 
 		return c;
