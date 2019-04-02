@@ -1,0 +1,5 @@
+https://lego.vilvert.fr/2017/12/08/calibrage-du-capteur-de-couleur-ev3-avec-lejos/
+http://www.rubiks-cube.fr/
+
+https://sourceforge.net/p/lejos/wiki/Installing%20leJOS/
+https://github.com/JuDePom/RubiksCubeLego/blob/master/Main.java
