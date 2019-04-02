@@ -22,7 +22,8 @@ from data.data_lumiere import data_lumiere
 from data.data_lumiere2 import data_lumiere2
 from data.data_sombre import data_sombre
 from data.data_sombre2 import data_sombre2
-
+from data.rubiks_desordre import data_desordre
+from data.data_dernier import data_dernier
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
     x,y = [[0,0],[0,30],[-30,0],[0,-30],[30,0],[60,0]][s]
@@ -330,8 +331,8 @@ def draw2(data):
     plt.show()
 
 
-    datas = [data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
-    #showData(datas,True)
+    datas = [data_dernier]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
+    showData(datas,True)
     
     """
     f = plt.figure(1)
