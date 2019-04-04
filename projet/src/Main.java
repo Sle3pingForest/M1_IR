@@ -30,7 +30,7 @@ enum Orient {
 	E (6, 9, -45),
 	SE(9, 8, -45),
 	S (8, 7, -45),
-	SW(7, 4, -45),//7,4,-44
+	SW(7, 4, -44),//7,4,-44
 	W (4, 5, -1),
 	//W (4, 5, -45),
 	C (5, 1, -45)
@@ -209,9 +209,11 @@ public class Main {
 	}
 
 	public void scan() throws IOException {
+		boolean remettre_cote = false;
 		HashMap<Integer, Color> res = new HashMap<>();
 		
 		for (Face face : Face.values()) {
+
 			for (Orient orient : Orient.values()) {
 				goTo(face, orient);
 				
@@ -319,7 +321,7 @@ public class Main {
 		int angle = 0;
 
 		if (orientation.value == 5) {
-			angle = 600;
+			angle = 550;
 		} else if (orientation.value % 2 == 0){
 			angle = 380;
 			
