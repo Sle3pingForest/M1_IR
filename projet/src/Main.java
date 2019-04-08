@@ -237,7 +237,7 @@ public class Main {
 			donnee.append("\n],");
 		}
 		donnee.append("]");
-		BufferedWriter writer = new BufferedWriter(new FileWriter("data_sombre2.txt"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter("data_0404_anglecoin_340_sombre.txt"));
 	    writer.write(donnee.toString());
 	     
 	    writer.close();
@@ -321,9 +321,9 @@ public class Main {
 		int angle = 0;
 
 		if (orientation.value == 5) {
-			angle = 550;
+			angle = 560;
 		} else if (orientation.value % 2 == 0){
-			angle = 380;
+			angle = 400;
 			
 		} else {
 			angle = 340;

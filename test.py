@@ -24,6 +24,13 @@ from data.data_sombre import data_sombre
 from data.data_sombre2 import data_sombre2
 from data.rubiks_desordre import data_desordre
 from data.data_dernier import data_dernier
+from data.data_nam_L import data_nam_L
+from data.data_lumiere_04_04 import data_04_04
+from data.data_04_04_2 import data_2
+from data.data_0404_coin_340 import data_coin_340
+from data.data_0404_anglecoin_330 import data_coin_330
+from data.data_0404_anglecoin_340_sombre import data_sombre_coin_340
+
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
     x,y = [[0,0],[0,30],[-30,0],[0,-30],[30,0],[60,0]][s]
@@ -331,7 +338,7 @@ def draw2(data):
     plt.show()
 
 
-    datas = [data_dernier]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
+    datas = [data_sombre_coin_340,data_coin_340,data_04_04,data_dernier, data_coin_330]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
     showData(datas,True)
     
     """
