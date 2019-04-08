@@ -49,6 +49,12 @@ def couleurCoin(data):
 
     return tab
 
+def couleurCentre(data):
+     tab = []
+     for s, side in enumerate(data):
+         tab.append(data[s][4])
+     return tab
+
 def couleurArete(data):
     tab = []
     for i in range(0,12):
@@ -146,7 +152,111 @@ def donnees(data):
 
 
 
+def draw_diffRGB(data):
+    x, y, color, c, max_color = donnees(data)
+   
+    n = 9
+    m = 6
+    c = couleurCentre(data)
+    diff = calculDiffCentre(data)
+    color_center = []
+    for k in range(0,6):
+      color_center.append([])
+  
 
+    for s, side in enumerate(data):
+        for f, (r,g,b) in enumerate(side):
+            if f != 4:
+	        indice = 0
+	        min_color = max_color
+	        size = len(c)
+          
+                #compare avec chaque centre
+	        for i in range(0,size):
+
+                    #calcul la nouvelle nuance de chaque centre
+                    color = [0,0,0]
+                    for l in range(0,3):
+                        color[l] = c[i][l] - diff[i][l]
+              
+	            rr = abs(r - color[0])
+	            gg = abs(g - color[1])
+	            bb = abs(b - color[2])
+	            if (min_color > ((rr +gg+bb)/3) ):
+	                min_color = (rr +gg+bb)/3
+	                indice = i
+	        color_center[indice].append( [r,g,b] )
+                
+    nb_erreur = 0
+    for i in range(0, len(color_center)):
+        if ( len(color_center[i]) > 8):
+            nb_erreur +=  len(color_center[i]) - 8
+
+    print float(nb_erreur)/48 *100 , "% d erreur  " ,   nb_erreur , "   sur 48"
+          
+    #coeff couleur uniforme
+    plt.figure(0)
+    for i in range(0, len(c)):
+        
+        plt.scatter(i, 0, s=800, marker='s', c=t255to01(c[i], max_color))
+        #decalage
+        decalage = 5
+        for j in range (0,len(color_center[i])):
+             plt.scatter(i, decalage + j, s=800, marker='s', c=t255to01(color_center[i][j], max_color) )
+          
+
+    
+    c = couleurCentre(data)
+    diffCoin, diffCote = calculDiffCentreCoinCote(data)
+
+    color_center = []
+    for k in range(0,6):
+      color_center.append([])
+  
+
+    for s, side in enumerate(data):
+        for f, (r,g,b) in enumerate(side):
+            if f != 4:
+	        indice = 0
+	        min_color = max_color
+	        size = len(c)
+                
+	        for i in range(0,size):
+
+                    color = [0,0,0]
+                    for l in range(0,3):
+                        if f%2 == 0:
+                            color[l] = c[i][l] - diffCoin[i][l]
+                        else:
+                            color[l] = c[i][l] - diffCote[i][l]
+	            rr = abs(r - color[0])
+	            gg = abs(g - color[1])
+	            bb = abs(b - color[2])
+	            if (min_color > ((rr +gg+bb)/3) ):
+	                min_color = (rr +gg+bb)/3
+	                indice = i
+	        color_center[indice].append( [r,g,b] )
+
+
+    nb_erreur = 0
+    for i in range(0, len(color_center)):
+        if ( len(color_center[i]) > 8):
+            nb_erreur +=  len(color_center[i]) - 8
+    print float(nb_erreur)/48 *100 , "% d erreur  " ,   nb_erreur , "   sur 48"
+          
+    #coeff couleur uniforme
+    plt.figure(1)
+    for i in range(0, len(c)):
+        
+        plt.scatter(i, 0, s=800, marker='s', c=t255to01(c[i], max_color))
+        #decalage
+        decalage = 5
+        for j in range (0,len(color_center[i])):
+             plt.scatter(i, decalage + j, s=800, marker='s', c=t255to01(color_center[i][j], max_color) )
+          
+    
+    
+    plt.show()
     
 # draw the unfolding / TA PARTIE A FINIR NAM
 def draw(data):
@@ -497,6 +607,10 @@ def calculEcartAvecCentre(data):
 
 ###########################
 
+
+
+
+
 def sameColor(c1, c2):
     return c1[0] == c2[0] and c1[1] == c2[1] and c1[2] == c2[2]
 
@@ -700,11 +814,7 @@ je refais la meme jusqua avoir tout compare
     
 
 def moyenneRGB(c1, c2):
-    r1 = abs(c1[0] - c2[0])
-
-    g1 = abs(c1[1] - c2[1])
-
-    b1 = abs(c1[2] - c2[2])
+    r1, g1, b1 = diffRGB(c1,c2)
 
     return round( (r1+g1+b1)/3 , 2)
 
@@ -732,27 +842,65 @@ def calculDiffColorRGB(c1, c2):
     b2 = c2[2]/ (c2[0]+c2[1]+c2[2])
     return abs(r1-r2), abs(g1-g2),abs(b1-b2)
 
-def compare2Couleur(c1 , c2):
+def diffRGB(c1, c2): 
     r1 = abs(c1[0] - c2[0])
 
     g1 = abs(c1[1] - c2[1])
 
     b1 = abs(c1[2] - c2[2])
 
+    return r1,g1,b1
+
+def compare2Couleur(c1 , c2):
+    r1, g1, b1 = diffRGB(c1,c2)
+
     return round(math.sqrt(r1*r1+g1*g1+b1*b1) , 2)
 
 
-"""
-data = [
-[[22, 7, 5],[4, 6, 8],[5, 7, 9],[3, 5, 8],[4, 6, 9],[3, 5, 7],[4, 6, 7],[4, 6, 8],[3, 4, 7]],
-[[31, 35, 29],[46, 52, 38],[35, 40, 33],[44, 48, 36],[59, 68, 45],[45, 50, 37], [3, 5, 6],[47, 51, 38],[36, 42, 33]],
-[[21, 8, 5],[28, 8, 5],[34, 39, 31],[25, 9, 4],[32, 12, 6],[24, 8, 4],[17, 7, 4],[27, 9, 4],[19, 7, 5]],
-[[28, 33, 42],[35, 40, 47],[26, 32, 39],[37, 42, 47],[52, 60, 62],[34, 40, 48],[27, 34, 42],[34, 40, 45],[24, 29, 40]],
-[[24, 36, 41],[33, 44, 49],[24, 34, 38],[29, 43, 44],[43, 61, 59],[28, 42, 44],[25, 38, 42],[33, 46, 48],[24, 35, 41]],
-[[9, 24, 29],[11, 31, 34],[8, 23, 27],[13, 32, 34],[15, 41, 40],[12, 31, 33],[11, 27, 31],[13, 34, 34],[10, 26, 30]]
-]
-"""
+def calculDiffCentre(data, mode="uniforme"):
+    
+    tab = couleurCentre(data)
+    moyenneDiff = []
+    for s, side in enumerate(data):
+        somme = [0,0,0]
+        for f, (r,g,b) in enumerate(side):
+            if f != 4:
+                c1 = [r,g,b]
+                colordiff = diffRGB(c1, tab[s])
+                for i in range(0,3):
+                    somme[i] += colordiff[i]
+        #calcul moyenne diff
+        for j in range(0,3):
+            somme[j] = somme[j]/8
+        moyenneDiff.append(somme)
+    return moyenneDiff
 
+
+def calculDiffCentreCoinCote(data, mode="uniforme"):
+    
+    tab = couleurCentre(data)
+    moyenneDiffCoin, moyenneDiffCote = [], []
+    for s, side in enumerate(data):
+        sommeCoin, sommeCote = [0,0,0], [0,0,0]
+        for f, (r,g,b) in enumerate(side):
+            if f != 4:
+                c1 = [r,g,b]
+                colordiff = diffRGB(c1, tab[s])
+                for i in range(0,3):
+                    if f%2 == 0:
+                        sommeCoin[i] += colordiff[i]
+                    else:
+                        sommeCote[i] += colordiff[i]
+        #calcul moyenne diff
+        for j in range(0,3):
+            sommeCoin[j] = sommeCoin[j]/4
+            sommeCote[j] = sommeCote[j]/4
+        moyenneDiffCoin.append(sommeCoin)
+        moyenneDiffCote.append(sommeCote)
+    return moyenneDiffCoin,  moyenneDiffCote
+
+
+    
 data = [
 [[3, 5, 6],[4, 6, 8],[5, 7, 9],[3, 5, 8],[4, 6, 9],[3, 5, 7],[4, 6, 7],[4, 6, 8],[3, 4, 7]],
 [[31, 35, 29],[46, 52, 38],[35, 40, 33],[44, 48, 36],[59, 68, 45],[45, 50, 37],[34, 39, 31],[47, 51, 38],[36, 42, 33]],
@@ -779,7 +927,11 @@ data_turned_coin_ok = [
     [0,2], [1,0], [2,3], [3,1], [4,6], [5,4], [6,7], [7,5]
 ]
 
-draw2(data)
+
+#print calculDIffCentreCoin(data)
+draw_diffRGB(data)
+    
+#draw2(data)
 #draw(data)
 
 
