@@ -60,10 +60,10 @@ def couleurCoin(data):
     tab[2].extend((data[0][4], data[2][4] , data[3][4]))
     tab[3].extend((data[0][4], data[3][4] , data[4][4]))
 
-    tab[4].extend((data[5][4], data[1][4] , data[2][4]))
-    tab[5].extend((data[5][4], data[1][4] , data[4][4]))
-    tab[6].extend((data[5][4], data[2][4] , data[3][4]))
-    tab[7].extend((data[5][4], data[3][4] , data[4][4]))
+    tab[4].extend((data[5][4], data[1][4] , data[4][4]))
+    tab[5].extend((data[5][4], data[1][4] , data[2][4]))
+    tab[6].extend((data[5][4], data[3][4] , data[4][4]))
+    tab[7].extend((data[5][4], data[2][4] , data[3][4]))
 
    
 
@@ -83,10 +83,11 @@ def couleurCoin(data):
     tab_diff[2].extend((tab_nuance[0], tab_nuance[2] , tab_nuance[3]))
     tab_diff[3].extend((tab_nuance[0], tab_nuance[3] , tab_nuance[4]))
 
-    tab_diff[4].extend((tab_nuance[5], tab_nuance[1] , tab_nuance[2]))
-    tab_diff[5].extend((tab_nuance[5], tab_nuance[1] , tab_nuance[4]))
-    tab_diff[6].extend((tab_nuance[5], tab_nuance[2] , tab_nuance[3]))
-    tab_diff[7].extend((tab_nuance[5], tab_nuance[3] , tab_nuance[4]))
+    
+    tab_diff[4].extend((tab_nuance[5], tab_nuance[1] , tab_nuance[4]))
+    tab_diff[5].extend((tab_nuance[5], tab_nuance[1] , tab_nuance[2]))
+    tab_diff[6].extend((tab_nuance[5], tab_nuance[3] , tab_nuance[4]))
+    tab_diff[7].extend((tab_nuance[5], tab_nuance[2] , tab_nuance[3]))
 
         
     return tab, tab_diff
@@ -143,9 +144,11 @@ def tabCoinCouleur(data):
     tabCoin[1].extend((data[0][2], data[1][8], data[4][0]))
     tabCoin[2].extend((data[0][6], data[2][8], data[3][0]))
     tabCoin[3].extend((data[0][8], data[3][2], data[4][6]))
-    tabCoin[4].extend((data[3][8], data[4][8], data[5][6])) 
-    tabCoin[5].extend((data[1][2], data[4][2], data[5][0]))
-    tabCoin[6].extend((data[1][0], data[2][0], data[5][2]))
+
+    
+    tabCoin[4].extend((data[1][2], data[4][2], data[5][0]))
+    tabCoin[5].extend((data[1][0], data[2][0], data[5][2]))
+    tabCoin[6].extend((data[3][8], data[4][8], data[5][6])) 
     tabCoin[7].extend((data[2][6], data[3][6], data[5][8]))
     return tabCoin
 
@@ -351,9 +354,8 @@ def draw(data):
       tonpere.append([])
     for i in range (0, len(c)):
         tamere.append( [ round(c[i][0])/68,  round(c[i][1]) / 68, round(c[i][2])/68] )
-            
-        
-
+    
+  
     
     for i in range(0,len(c) ):
         
@@ -416,9 +418,13 @@ def draw2(data):
         for j in range(0,len(tabCoinCheck)): #parcours tous les triplets de couleurs des centre a comparer
             #print tabCoin[i], "    " , tabCoinCheck[j]
             #t, tt, indice = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[j])
-            t = diffRGBCoin( tabCoin[i], tabCoinCheck[j] )
+            t = diffRGBCoin( tabCoin[i], tabCoinCheckDiff[j] )
+            if i == j:
+                print "je suis t opti :", tabCoin[i] , "         " , tabCoinCheckDiff[j], "   " ,t
             tabPref[i].append(t)
 
+    for i in range(0, len(tabPref)):
+        print tabPref[i]
             
     for i in range(0, len(tabPref)):
         coinPref.append( choixMeilleurCentre(tabPref[i]) )
@@ -431,13 +437,31 @@ def draw2(data):
 
     nb_erreur = 0
     for i in range(0, len(test_coin)):
-        if test_coin[i] != data_coin_ok[i][1]:
+        if test_coin[i] != data_turned_coin_ok[i][1]:
             nb_erreur += 1
-            print test_coin[i] , "     " , data_coin_ok[i][1]
+            #print test_coin[i] , "     " , data_coin_ok[i][1]
 
     print float(nb_erreur)/8 *100 , "% d erreur  " ,   nb_erreur , "   sur " , len(test_coin)
 
+    print test_coin
     
+    plt.figure(0)
+    
+    decalage = 0
+    for i in range(0,8):
+
+        for j in range(0,3):
+            couleurTabCoin = [ round( tabCoin[i][j][0] )/68 , round( tabCoin[i][j][1])/68 , round( tabCoin[i][j][2])/68 ]
+            couleurCentreAssocie = [ round( tabCoinCheckDiff[ test_coin[i] ][j][0])/68 , round( tabCoinCheckDiff[ test_coin[i] ][j][1])/68 , round( tabCoinCheckDiff[ test_coin[i] ][j][2])/68  ]
+            if j == 0:
+                decalage += 5
+            plt.scatter(i*3+j + decalage, 0, s=800, marker='o', c= couleurCentreAssocie )
+            plt.scatter(i*3+j + decalage, 5, s=800, marker='o', c= couleurTabCoin )
+    
+    #plt.savefig('tri_coin.png')
+    plt.show()
+
+    """
     for i in range(0,len(tabCoin)):
         tabIndice.append( coinPref[i][1])
         indice = coinPref[i][1]
@@ -446,17 +470,17 @@ def draw2(data):
 
     nb_erreur = 0
     for i in range(0, len(tabIndice)):
-        if tabIndice[i] != data_coin_ok[i][1]:
+        if tabIndice[i] != data_turned_coin_ok[i][1]:
             nb_erreur += 1
 
     print float(nb_erreur)/8 *100 , "% d erreur  " ,   nb_erreur , "   sur " , len(tabCoin)
-    
+    """
     copieCheck = tabCoinCheck
     tabFigure = ['f', 'g', 'h', 'j' ,'k', 'l', 'm', 'n']
 
     #print " association " , tabFinal
     # print " coin centre " , copieCheck
-    
+    """
     plt.figure(0)
     
     decalage = 0
@@ -474,8 +498,10 @@ def draw2(data):
     #plt.savefig('tri_coin.png')
     plt.show()
 
+    """
+
     datas = [data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
-    showData(datas,True)
+    #showData(datas,True)
 
     # CA OUVRE 2 FENETRE YOUPI
 
@@ -676,13 +702,15 @@ def choixMeilleurCentre(tabPref):
 
 def diffRGBCoin(tabCoin, tabCoinCheck):
 
-    somme = [0,0,0]
+    somme1 = [0,0,0]
+    somme2 = [0,0,0]
+
     for i in range (0, len(tabCoin)):
-
         for j in range(0, len(tabCoin[i])):
-            somme[j] += abs(tabCoin[i][j] - tabCoinCheck[i][j])
+            somme1[j] += tabCoin[i][j]
+            somme2[j] += tabCoinCheck[i][j]
 
-    return round( float((somme[0]+somme[1]+somme[2]) / 3), 2)
+    return round( float(  abs(somme1[0] - somme2[0] ) + abs(somme1[1] - somme2[1] ) + abs(somme1[2] - somme2[2] ) / 3), 2)
     
 
 # retourne la difference la plus petite et l'arangement de couleur qui lui correspond
@@ -995,7 +1023,7 @@ diffCoin, diffCote = calculDiffCentreCoinCote(data)
 #test_hsv(data)
 #draw_diffRGB(data)
     
-draw2(data)
+draw2(data_turned)
 #draw(data)
 
 
