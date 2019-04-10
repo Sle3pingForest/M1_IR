@@ -32,6 +32,12 @@ from data.data_0404_coin_340 import data_coin_340
 from data.data_0404_anglecoin_330 import data_coin_330
 from data.data_0404_anglecoin_340_sombre import data_sombre_coin_340
 from data.data_0904_2 import data_0904_2
+from data.data_1004_anglemaxarriere import data_1004_anglemaxarriere
+from data.data_1004_anglemaxarriere_sombre import data_1004_anglemaxarriere_sombre
+from data.data_1004_max_L_1_3pi import data_1004_max_L_1_3pi
+from data.data_1004_max_S_0_3pi import data_1004_max_S_0_3pi
+from data.data_1004_max_L_0_3pi import data_1004_max_L_0_3pi
+from data.data_turned_1004_max_S_0_3pi import data_turned_1004_max_S_0_3pi
 
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
@@ -468,7 +474,7 @@ def draw2(data):
     #plt.savefig('tri_coin.png')
     plt.show()
 
-    datas = [data_0904_2,data_sombre_coin_340,data_coin_340,data_04_04,data_dernier, data_coin_330]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
+    datas = [data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
     showData(datas,True)
 
     # CA OUVRE 2 FENETRE YOUPI
