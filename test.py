@@ -17,6 +17,7 @@ This code draws Rubik's cube unfoldings with raw RGB data
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import colorsys
 from data.data3 import data3
 from data.data_lumiere import data_lumiere
 from data.data_lumiere2 import data_lumiere2
@@ -26,7 +27,7 @@ from data.rubiks_desordre import data_desordre
 from data.data_dernier import data_dernier
 from data.data_nam_L import data_nam_L
 from data.data_lumiere_04_04 import data_04_04
-from data.data_04_04_2 import data_2
+from data.data_04_04_2 import data_04_04_2
 from data.data_0404_coin_340 import data_coin_340
 from data.data_0404_anglecoin_330 import data_coin_330
 from data.data_0404_anglecoin_340_sombre import data_sombre_coin_340
@@ -42,8 +43,11 @@ def coord2(s,f):
 # retourne les huits combinaisons de triplets possibles en fonction des centres
 def couleurCoin(data):
     tab = []
+    tab_diff = []
+    tab_nuance = []
     for i in range(0,8):
         tab.append([])
+        tab_diff.append([])
 
     tab[0].extend((data[0][4], data[1][4] , data[2][4]))
     tab[1].extend((data[0][4], data[1][4] , data[4][4]))
@@ -55,7 +59,31 @@ def couleurCoin(data):
     tab[6].extend((data[5][4], data[2][4] , data[3][4]))
     tab[7].extend((data[5][4], data[3][4] , data[4][4]))
 
-    return tab
+   
+
+    #pour chaque couleur du triplet
+    for i in range(0, len(data)):
+        color = [0,0,0]
+        #pour chaque r g b de la couleur
+        for j in range(0, len(data[i][4])):
+            #print data[i][j]
+            #print diffCoin[i]
+            color[j] = data[i][4][j] - diffCoin[i][j]
+        tab_nuance.append( color )
+
+
+    tab_diff[0].extend((tab_nuance[0], tab_nuance[1] , tab_nuance[2]))
+    tab_diff[1].extend((tab_nuance[0], tab_nuance[1] , tab_nuance[4]))
+    tab_diff[2].extend((tab_nuance[0], tab_nuance[2] , tab_nuance[3]))
+    tab_diff[3].extend((tab_nuance[0], tab_nuance[3] , tab_nuance[4]))
+
+    tab_diff[4].extend((tab_nuance[5], tab_nuance[1] , tab_nuance[2]))
+    tab_diff[5].extend((tab_nuance[5], tab_nuance[1] , tab_nuance[4]))
+    tab_diff[6].extend((tab_nuance[5], tab_nuance[2] , tab_nuance[3]))
+    tab_diff[7].extend((tab_nuance[5], tab_nuance[3] , tab_nuance[4]))
+
+        
+    return tab, tab_diff
 
 def couleurCentre(data):
      tab = []
@@ -166,7 +194,6 @@ def draw_diffRGB(data):
     n = 9
     m = 6
     c = couleurCentre(data)
-    diff = calculDiffCentre(data)
     color_center = []
     for k in range(0,6):
       color_center.append([])
@@ -215,7 +242,6 @@ def draw_diffRGB(data):
 
     
     c = couleurCentre(data)
-    diffCoin, diffCote = calculDiffCentreCoinCote(data)
 
     color_center = []
     for k in range(0,6):
@@ -376,14 +402,15 @@ def draw2(data):
     for k in range(0,8):  
         tabPref.append([])
     
-    tabCoinCheck = couleurCoin(data)
+    tabCoinCheck, tabCoinCheckDiff = couleurCoin(data)
 
 
     # stocke les moyennes des differences les plus basses pour chaque coin centre
-    for i in range(0, len(tabCoin)): #parcours tous les coin 
+    for i in range(0, len(tabCoin)): #parcours tous les coins 
         for j in range(0,len(tabCoinCheck)): #parcours tous les triplets de couleurs des centre a comparer
             #print tabCoin[i], "    " , tabCoinCheck[j]
-            t, tt, indice = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[j])
+            #t, tt, indice = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[j])
+            t = diffRGBCoin( tabCoin[i], tabCoinCheck[j] )
             tabPref[i].append(t)
 
             
@@ -400,14 +427,16 @@ def draw2(data):
     for i in range(0, len(test_coin)):
         if test_coin[i] != data_coin_ok[i][1]:
             nb_erreur += 1
+            print test_coin[i] , "     " , data_coin_ok[i][1]
 
     print float(nb_erreur)/8 *100 , "% d erreur  " ,   nb_erreur , "   sur " , len(test_coin)
+
     
     for i in range(0,len(tabCoin)):
         tabIndice.append( coinPref[i][1])
         indice = coinPref[i][1]
-        t , tt, ttt= choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[indice])
-        tabFinal.append( tt )
+        #t , tt, ttt= choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[indice])
+        #tabFinal.append( tt )
 
     nb_erreur = 0
     for i in range(0, len(tabIndice)):
@@ -421,11 +450,11 @@ def draw2(data):
 
     #print " association " , tabFinal
     # print " coin centre " , copieCheck
-   
+    
     plt.figure(0)
     
     decalage = 0
-    for i in range(0,len(tabFigure)):
+    for i in range(0,8):
 
         for j in range(0,3):
             couleurTabCoin = [ round( tabCoin[i][j][0] )/68 , round( tabCoin[i][j][1])/68 , round( tabCoin[i][j][2])/68 ]
@@ -435,42 +464,13 @@ def draw2(data):
             plt.scatter(i*3+j + decalage, 0, s=800, marker='o', c= couleurCentreAssocie )
             plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurTabCoin )
 
-        """
-        for j in range(0,3):
-            t = [round(copieCheck[i][j][0])/68 , round(copieCheck[i][j][1])/68, round(copieCheck[i][j][2])/68 ]
-            #print t
-            tt = [round(tabFinal[i][j][0])/68 , round(tabFinal[i][j][1])/68, round(tabFinal[i][j][2])/68 ]
-            #print tt
-            plt.scatter(j, 0, s=800, marker='o', c= t )
-            plt.scatter(j, 10, s=800, marker='o', c= tt )
-        """
-        
+    
     #plt.savefig('tri_coin.png')
     plt.show()
 
-
     datas = [data_0904_2,data_sombre_coin_340,data_coin_340,data_04_04,data_dernier, data_coin_330]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
     showData(datas,True)
-    
-    """
-    f = plt.figure(1)
 
-    #for j in range (0,8):
-    for i in range(0,3):
-        plt.scatter(i, 0, s=800, marker='o', c=tabCoinCheck[0][i])
-        plt.scatter(i, 10, s=800, marker='o', c=tabaffiche[i])
-    
-    plt.scatter(x, y, s=800, marker='s', c=color)
-    plt.title('Rubik\'s cube unfolding')
-    plt.axis('off')
-    plt.savefig('unfolding.png')
-      
-
-    g = plt.figure(2)
-    plt.scatter(x, y, s=800, marker='s', c=color)
-    
-    plt.show()
-    """
     # CA OUVRE 2 FENETRE YOUPI
 
 
@@ -616,7 +616,41 @@ def calculEcartAvecCentre(data):
 ###########################
 
 
+def distance_hsv(hsv1, hsv2):
+    r = math.pow(hsv1[0] - hsv2[0], 2)
+    g = math.pow(hsv1[1] - hsv2[1], 2)
+    b = math.pow(hsv1[2] - hsv2[2], 2)
+    return math.sqrt( float(r) +float(g) + float(b) )
 
+#comparaison des couleurs hsv avec chaque centre et sa distance vectoriel 
+def test_hsv(data):
+
+    centre = couleurCentre(data)
+    centre_hsv = []
+    tab_hsv = []
+    tab_rgb, data_rgb = [], []
+
+    #conversion face i en hsv
+    for i in range(0, len(data[1])):
+        color = t255to01(data[1][i],68)
+        data_rgb.append(color)
+        #print "  couleur des donnees :  " , data[1][4] , "      couleur en format 0-1 : ", color
+        tab_hsv.append( colorsys.rgb_to_hsv(color[0], color[1], color[2]) )
+        tab_rgb.append( colorsys.hsv_to_rgb( tab_hsv[i][0], tab_hsv[i][1], tab_hsv[i][2]) )
+
+    #conversion centre rgb to hsv
+    for i in range(0, len(centre)):
+        color = t255to01(centre[i],68)
+        #print "  couleur des donnees :  " , data[1][4] , "      couleur en format 0-1 : ", color
+        centre_hsv.append( colorsys.rgb_to_hsv(color[0], color[1], color[2]) )
+
+    for j in range(0, len(centre)):
+        #calcul distance
+        for i in range(0, len(tab_hsv)):
+            if i==0:
+                print data[1][i], "     " , data[j][4]
+            print "distance facet ",i," avec centre de ", j," : ", distance_hsv(tab_hsv[i], centre_hsv[j] )
+        print "\n"
 
 
 def sameColor(c1, c2):
@@ -633,6 +667,16 @@ def choixMeilleurCentre(tabPref):
     return tabPref[indice], indice
 
 
+
+def diffRGBCoin(tabCoin, tabCoinCheck):
+
+    somme = [0,0,0]
+    for i in range (0, len(tabCoin)):
+
+        for j in range(0, len(tabCoin[i])):
+            somme[j] += abs(tabCoin[i][j] - tabCoinCheck[i][j])
+
+    return round( float((somme[0]+somme[1]+somme[2]) / 3), 2)
     
 
 # retourne la difference la plus petite et l'arangement de couleur qui lui correspond
@@ -657,6 +701,9 @@ def choixPlusPetiteDiff(tabCoin, tabCoinCheck):
         tabC[2].append(moyenneRGB(tabCoin[2] , tabCoinCheck[0]))
         tabC[2].append(moyenneRGB(tabCoin[2] , tabCoinCheck[1]))
         tabC[2].append(moyenneRGB(tabCoin[2] , tabCoinCheck[2]))
+
+
+        
         #print " debut   "
         indice = 0
         tabaffiche = []
@@ -834,8 +881,8 @@ def rgb255to01(c1,div):
 
 
 def t255to01(c1,div):
-    color = []
-    color.append( [ round(c1[0])/div,  round(c1[1])/div,  round(c1[2])/div ] )
+    color = 0
+    color = [ round(c1[0])/div,  round(c1[1])/div,  round(c1[2])/div ] 
     return  color
 
 def calculDiffColorRGB(c1, c2):
@@ -936,10 +983,13 @@ data_turned_coin_ok = [
 ]
 
 
-#print calculDIffCentreCoin(data)
-draw_diffRGB(data)
+diff = calculDiffCentre(data)
+diffCoin, diffCote = calculDiffCentreCoinCote(data)
+
+#test_hsv(data)
+#draw_diffRGB(data)
     
-#draw2(data)
+draw2(data)
 #draw(data)
 
 
