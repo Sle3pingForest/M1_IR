@@ -213,12 +213,13 @@ public class Main {
 		HashMap<Integer, Color> res = new HashMap<>();
 		
 		for (Face face : Face.values()) {
-
+			int compteur = 0;
 			for (Orient orient : Orient.values()) {
 				goTo(face, orient);
 				
-				Color c = readColor();
+				Color c = readColor(compteur);
 				res.put(new Integer(face.value +""+ this.orientation.value), c);
+				compteur++;
 			}
 			motorCol.moveDegree(0, 720);
 			
@@ -237,12 +238,14 @@ public class Main {
 			donnee.append("\n],");
 		}
 		donnee.append("]");
-		BufferedWriter writer = new BufferedWriter(new FileWriter("data_0404_anglecoin_340_sombre.txt"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter("data_1004_max_S_0_3pi.txt"));
 	    writer.write(donnee.toString());
 	     
 	    writer.close();
 	    
 	}
+	
+	// data + date + angle motor B + luminosite (L = eclairé , S = sombre,  + R = lumiere naturel) + cran du capteur (0 ,1 ,2) + angle capteur( en pi)
 
 
 
@@ -314,21 +317,42 @@ public class Main {
 	}
 
 	// VA ERT VIENS POUR LIRE LES 9 FACET
-	Color readColor(){
+	Color readColor(int compt){
 		//System.out.println("Reading: "+ this.face.name() +" "+ this.orientation.name());
-		
+		// cran capteur 0 , angle 3pi
 		Color c = new Color(0, 0, 0);
 		int angle = 0;
-
-		if (orientation.value == 5) {
+		
+		if (compt == 0) {
 			angle = 560;
+		} else if (orientation.value == 5) {
+			//angle = 560;
+			angle = 770;
 		} else if (orientation.value % 2 == 0){
-			angle = 400;
+			//angle = 400;
+			angle = 600;
 			
 		} else {
-			angle = 340;
+			//angle = 400;
+			angle = 540;
 		} 
 
+		/*
+		 cran capteur 1 
+		if (compt == 0) {
+			angle = 570;
+		} else if (orientation.value == 5) {
+			//angle = 560;
+			angle = 780;
+		} else if (orientation.value % 2 == 0){
+			//angle = 400;
+			angle = 590;
+			
+		} else {
+			//angle = 400;
+			angle = 510;
+		} 
+		 */	
 		motorCol.moveDegree(-angle, 720);
 		c = colorSensor.getColor();
 
