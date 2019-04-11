@@ -418,14 +418,12 @@ def draw2(data):
         for j in range(0,len(tabCoinCheck)): #parcours tous les triplets de couleurs des centre a comparer
             #print tabCoin[i], "    " , tabCoinCheck[j]
             #t, tt, indice = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[j])
-            t = diffRGBCoin( tabCoin[i], tabCoinCheckDiff[j] )
-            if i == j:
-                print "je suis t opti :", tabCoin[i] , "         " , tabCoinCheckDiff[j], "   " ,t
+            t = diffRGBCoin( tabCoin[i], tabCoinCheck[j] )
             tabPref[i].append(t)
-
+    """
     for i in range(0, len(tabPref)):
         print tabPref[i]
-            
+    """        
     for i in range(0, len(tabPref)):
         coinPref.append( choixMeilleurCentre(tabPref[i]) )
 
@@ -443,7 +441,7 @@ def draw2(data):
 
     print float(nb_erreur)/8 *100 , "% d erreur  " ,   nb_erreur , "   sur " , len(test_coin)
 
-    print test_coin
+    print "affectation ", test_coin
     
     plt.figure(0)
     
@@ -452,11 +450,13 @@ def draw2(data):
 
         for j in range(0,3):
             couleurTabCoin = [ round( tabCoin[i][j][0] )/68 , round( tabCoin[i][j][1])/68 , round( tabCoin[i][j][2])/68 ]
-            couleurCentreAssocie = [ round( tabCoinCheckDiff[ test_coin[i] ][j][0])/68 , round( tabCoinCheckDiff[ test_coin[i] ][j][1])/68 , round( tabCoinCheckDiff[ test_coin[i] ][j][2])/68  ]
+            couleurCentreAssocie = [ round( tabCoinCheck[ test_coin[i] ][j][0])/68 , round( tabCoinCheck[ test_coin[i] ][j][1])/68 , round( tabCoinCheck[ test_coin[i] ][j][2])/68  ]
+            couleurCentre = [ round( tabCoinCheck[ i ][j][0])/68 , round( tabCoinCheck[ i ][j][1])/68 , round( tabCoinCheck[ i ][j][2])/68  ]
             if j == 0:
                 decalage += 5
-            plt.scatter(i*3+j + decalage, 0, s=800, marker='o', c= couleurCentreAssocie )
-            plt.scatter(i*3+j + decalage, 5, s=800, marker='o', c= couleurTabCoin )
+            plt.scatter(i*3+j + decalage, 0, s=800, marker='o', c= couleurTabCoin )
+            plt.scatter(i*3+j + decalage, 5, s=800, marker='o', c= couleurCentreAssocie )
+            plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurCentre )
     
     #plt.savefig('tri_coin.png')
     plt.show()
@@ -557,6 +557,14 @@ def draw3(data):
             plt.scatter(j, 10, s=800, marker='o', c= tt )
     plt.show()
 
+"""
+def repartitionParPosition(data):
+    tab = positionnement(data)
+
+    tab_pref = []
+    for i in range(0, len(tab)):
+        tab_pref.append([])
+"""
 
 
 # draw the unfolding
@@ -573,6 +581,8 @@ def draw_rgb_debut(data):
     cccc = []
     
     compteur = 0
+
+    print " JESUIS CENTRE ", c
     
     for s, side in enumerate(data):
         for f, (r,g,b) in enumerate(side):
@@ -608,7 +618,7 @@ def draw_rgb_debut(data):
            
     for i in range(0,len(color_center) ):
         
-      print ' COULEUR SIDE ',  c[i], '  liste facet: ', color_center[i], '\n'
+      #print ' COULEUR SIDE ',  c[i], '  liste facet: ', color_center[i], '\n'
       tabColor = []
       for j in range (0 , len(color_center[i])):
             plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  rgb255to01(color_center[i][j], 68) )
@@ -668,7 +678,7 @@ def test_hsv(data):
         data_rgb.append(color)
         #print "  couleur des donnees :  " , data[1][4] , "      couleur en format 0-1 : ", color
         tab_hsv.append( colorsys.rgb_to_hsv(color[0], color[1], color[2]) )
-        tab_rgb.append( colorsys.hsv_to_rgb( tab_hsv[i][0], tab_hsv[i][1], tab_hsv[i][2]) )
+        #tab_rgb.append( colorsys.hsv_to_rgb( tab_hsv[i][0], tab_hsv[i][1], tab_hsv[i][2]) )
 
     #conversion centre rgb to hsv
     for i in range(0, len(centre)):
@@ -683,6 +693,34 @@ def test_hsv(data):
                 print data[1][i], "     " , data[j][4]
             print "distance facet ",i," avec centre de ", j," : ", distance_hsv(tab_hsv[i], centre_hsv[j] )
         print "\n"
+
+    #test sur toutes les facets
+    
+    data_hsv ,color_center = [], []
+    for i in range(0, len(data)):
+        data_hsv.append([])
+        color_center.append([])
+        
+    for s, side in enumerate(data):
+        for f, (r,g,b) in enumerate(side):
+            data_hsv[s].append( colorsys.rgb_to_hsv(r, g, b) )
+            min_distance = 100000
+            indice = 0
+            for i in range(0, len(centre_hsv)):
+                dist = distance_hsv(data[s][f], centre[i])
+                if dist < min_distance:
+                    min_distance = dist
+                    indice = i
+	    color_center[indice].append( [r,g,b] )
+
+    for i in range(0,len(color_center) ):
+
+      tabColor = []
+      for j in range (0 , len(color_center[i])):
+            plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  rgb255to01(color_center[i][j], 68) )
+            plt.scatter(i, 0, s=800, marker='o', c= t255to01(centre[i],68) )
+   
+    plt.show()    
 
 
 def sameColor(c1, c2):
@@ -805,7 +843,6 @@ def choixPlusPetiteDiffDoublons(tabCoin, tabCoinCheck):
 
 def showData(data, plusieurs=False):
 
-
     taille = 0
     # if true there is many array of data
     if plusieurs == True:
@@ -820,19 +857,45 @@ def showData(data, plusieurs=False):
         plt.scatter(x, y, s=800, marker='s', c=color)
     plt.show()
 
+def positionnement(data):
 
-#parcours et choisit pour chaque centre le triplet le plus ressemblant (rgb)
+    tab_faces_group = []
+
+    for i in range(0, len(data[0])):
+        tab_faces_group.append([])
+
+    
+    for i in range(0, len(data[0])):
+        for j in range(0, len(data)):
+            tab_faces_group[i].append(data[j][i])
+
+    return tab_faces_group
+
+#parcours et choisit pour chaque triplet le centre le plus ressemblant (rgb)
 def repartition(tabPref):
     
     fini = False
+
+    #tableau ou sera indique laffectation de chaque triplet avec le centre le plus ressemblant 
     tabFinal = [-1] * len(tabPref)
     compt = 0
+
+    # si 0 le centre i na pas ete affecte si 1 le centre a ete affecte
     tabChoix = [0] * len(tabPref)
+
+    for i in range(0, len(tabPref)):
+        print tabPref[i] 
+    print "\n"
+        
     while fini == False:
         tab = []
         for i in range(0, len(tabPref)):
+            #stocke le coin le plus ressemblant avec sa valeur associe a un centre  i   
             tab.append([])
+            
+        #tableau qui compte le nombre de triplet qui veulent etre associe au centre i
         tabCount = [0] * len(tabPref)
+        
         # parcours les colonnes pour chaque coin des centres
         for i in range(0, len(tabPref[0])):
             
@@ -849,17 +912,20 @@ def repartition(tabPref):
 
 
         for i in range(0, len(tabCount)):
-            #si je nai pas attribue de coin a celui que je check
+            
+            #si celui que je check,  na pas de coin centre  attribue 
             if tabFinal[i] == -1:
+                
                 # si il a un seul meilleur coin et que le coin centre n a pas ete attribue
                 if tabCount[i] == 1 and tabChoix[ tab[i][0][1] ] == 0:
+                    
                     indicecol = tab[i][0][1]
                     #jenleve la ligne et la colonne du coin que jai check 
-                    # et jattribue dans les tableaux
+                    #et jattribue dans les tableaux
                     for j in range(0, len(tabPref[0])):
-                        tabPref[i][j] = 256
+                        tabPref[i][j] = 256.
                     for k in range(0, len(tabPref)):
-                        tabPref[k][indicecol] = 256
+                        tabPref[k][indicecol] = 256.
                     tabFinal[i] = tab[i][0][1]
                     tabChoix[ tabFinal[i] ] = 1
                         
@@ -875,16 +941,21 @@ def repartition(tabPref):
                             indicecol = tab[i][k][1]
                             indice = k
                             
-                            #et si le coin centre n a pas ete attribue
+                    #et si le coin centre n a pas ete attribue
                     if tabChoix[ tab[i][indice][1] ] == 0:
                         #jenleve la ligne et la colonne du coin que jai check 
                         # et jattribue dans les tableaux
                         for j in range(0, len(tabPref[0])):
-                            tabPref[i][j] = 256   
+                            tabPref[i][j] = 256.
                         for k in range(0, len(tabPref)):
-                            tabPref[k][indicecol] = 256
+                            tabPref[k][indicecol] = 256.
                         tabFinal[i] = tab[i][indice][1]
                         tabChoix[ tabFinal[i] ] = 1
+
+
+        for i in range(0, len(tabPref)):
+            print tabPref[i] 
+        print "\n"
         
         #si tous les coin ont ete attribue a un coin centre je sors
         fini = True
@@ -899,8 +970,6 @@ je compare et recupere le plus petit des 8 differences et son indice
 jassocie le triplet au coin centre et je modifie toutes les valeurs a cet indice a un max
 je refais la meme jusqua avoir tout compare
 """
-
-    
 
 def moyenneRGB(c1, c2):
     r1, g1, b1 = diffRGB(c1,c2)
@@ -1021,9 +1090,9 @@ diff = calculDiffCentre(data)
 diffCoin, diffCote = calculDiffCentreCoinCote(data)
 
 #test_hsv(data)
-#draw_diffRGB(data)
-    
-draw2(data_turned)
+draw_diffRGB(data)
+#draw_rgb_debut(data)
+#draw2(data_turned)
 #draw(data)
 
 
