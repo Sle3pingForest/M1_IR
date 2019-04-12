@@ -38,7 +38,12 @@ from data.data_1004_max_L_1_3pi import data_1004_max_L_1_3pi
 from data.data_1004_max_S_0_3pi import data_1004_max_S_0_3pi
 from data.data_1004_max_L_0_3pi import data_1004_max_L_0_3pi
 from data.data_turned_1004_max_S_0_3pi import data_turned_1004_max_S_0_3pi
-
+from data.test_feuille_couleur import test_feuille_couleur
+from data.test_feuille_couleur_pres import test_feuille_couleur_pres
+from data.test_feuille_couleur_tres_pres import test_feuille_couleur_tres_pres
+from data.test_rubiks_rube2 import test_rubiks_rube2
+from data.data_1204_max_S_0_3pi import data_1204_max_S_0_3pi
+from data.data_1204_rubiks1_max_S_0_3pi import data_1204_rubiks1_max_S_0_3pi
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
     x,y = [[0,0],[0,30],[-30,0],[0,-30],[30,0],[60,0]][s]
@@ -500,8 +505,8 @@ def draw2(data):
 
     """
 
-    datas = [data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
-    #showData(datas,True)
+    datas = [test_feuille_couleur, test_feuille_couleur_pres,test_feuille_couleur_tres_pres, test_rubiks_rube2, data_1204_rubiks1_max_S_0_3pi]#data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
+    showData(datas,True)
 
     # CA OUVRE 2 FENETRE YOUPI
 
@@ -1090,9 +1095,9 @@ diff = calculDiffCentre(data)
 diffCoin, diffCote = calculDiffCentreCoinCote(data)
 
 #test_hsv(data)
-draw_diffRGB(data)
+#draw_diffRGB(data)
 #draw_rgb_debut(data)
-#draw2(data_turned)
+draw2(data_turned)
 #draw(data)
 
 
