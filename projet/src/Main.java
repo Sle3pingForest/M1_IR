@@ -238,7 +238,7 @@ public class Main {
 			donnee.append("\n],");
 		}
 		donnee.append("]");
-		BufferedWriter writer = new BufferedWriter(new FileWriter("data_1004_max_S_0_3pi.txt"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter("data_1204_rubiks1_max_S_0_3pi.txt"));
 	    writer.write(donnee.toString());
 	     
 	    writer.close();
