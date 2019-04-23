@@ -279,7 +279,7 @@ def draw2(data):
 
     nb_erreur = 0
     for i in range(0, len(test_coin)):
-        if test_coin[i] != data_coin_ok[i][1]:
+        if test_coin[i] != data_turned_coin_ok[i][1]:
             nb_erreur += 1
 
     print float(nb_erreur)/8 *100 , "% d erreur  " ,   nb_erreur , "   sur " , len(test_coin)
@@ -292,7 +292,7 @@ def draw2(data):
 
     nb_erreur = 0
     for i in range(0, len(tabIndice)):
-        if tabIndice[i] != data_coin_ok[i][1]:
+        if tabIndice[i] != data_turned_coin_ok[i][1]:
             nb_erreur += 1
 
     print float(nb_erreur)/8 *100 , "% d erreur  " ,   nb_erreur , "   sur " , len(tabCoin)
@@ -778,7 +778,7 @@ data_turned_coin_ok = [
     [0,2], [1,0], [2,3], [3,1], [4,6], [5,4], [6,7], [7,5]
 ]
 
-draw2(data)
+draw2(data_turned)
 #draw(data)
 
 
