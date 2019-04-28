@@ -238,7 +238,7 @@ public class Main {
 			donnee.append("\n],");
 		}
 		donnee.append("]");
-		BufferedWriter writer = new BufferedWriter(new FileWriter("data_2804_prof_pres_720.txt"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter("data_2804_rubiksdamiennoir.txt"));
 
 	    writer.write(donnee.toString());
 	     
