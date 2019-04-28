@@ -52,6 +52,8 @@ from data.data_rubiks4_2804_rgbmode import data_rubiks4_2804_rgbmode
 from data.data_2804_800_prof import data_2804_800_prof
 from data.data_2804_800 import data_2804_800
 from data.data_2804_750_prof import data_2804_750_prof
+from data.data_2804_prof_pres_720 import data_2804_prof_pres_720
+from data.data_2804_prof_pres import data_2804_prof_pres
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
     x,y = [[0,0],[0,30],[-30,0],[0,-30],[30,0],[60,0]][s]
@@ -513,11 +515,8 @@ def draw2(data):
 
     """
 
-<<<<<<< HEAD
-    datas = [data_1104_max_R_0_3pi,data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
-=======
-    datas = [data_2804_750_prof,data_2804_800_prof, data_2804_800,data_rubiks4_2804_rgbmode, data_rubiks4_2804_centrer]#data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
->>>>>>> e3ded79b2665e259f11008a13feca59f5ac741bd
+
+    datas = [data_2804_prof_pres_720,data_2804_prof_pres]#data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
     showData(datas,True)
 
     # CA OUVRE 2 FENETRE YOUPI
