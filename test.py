@@ -44,6 +44,13 @@ from data.test_feuille_couleur_tres_pres import test_feuille_couleur_tres_pres
 from data.test_rubiks_rube2 import test_rubiks_rube2
 from data.data_1204_max_S_0_3pi import data_1204_max_S_0_3pi
 from data.data_1204_rubiks1_max_S_0_3pi import data_1204_rubiks1_max_S_0_3pi
+from data.data_rubiks4_2804_toucher import data_rubiks4_2804_toucher
+from data.data_rubiks4_2804 import data_rubiks4_2804
+from data.data_rubiks4_2804_centrer import data_rubiks4_2804_centrer
+from data.data_rubiks4_2804_rgbmode import data_rubiks4_2804_rgbmode
+from data.data_2804_800_prof import data_2804_800_prof
+from data.data_2804_800 import data_2804_800
+from data.data_2804_750_prof import data_2804_750_prof
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
     x,y = [[0,0],[0,30],[-30,0],[0,-30],[30,0],[60,0]][s]
@@ -505,7 +512,7 @@ def draw2(data):
 
     """
 
-    datas = [test_feuille_couleur, test_feuille_couleur_pres,test_feuille_couleur_tres_pres, test_rubiks_rube2, data_1204_rubiks1_max_S_0_3pi]#data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
+    datas = [data_2804_750_prof,data_2804_800_prof, data_2804_800,data_rubiks4_2804_rgbmode, data_rubiks4_2804_centrer]#data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
     showData(datas,True)
 
     # CA OUVRE 2 FENETRE YOUPI
