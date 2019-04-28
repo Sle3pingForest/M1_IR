@@ -18,6 +18,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 import colorsys
+from mpl_toolkits import mplot3d
+
 from data.data3 import data3
 from data.data_lumiere import data_lumiere
 from data.data_lumiere2 import data_lumiere2
@@ -675,13 +677,43 @@ def calculEcartAvecCentre(data):
 
 
 def distance_hsv(hsv1, hsv2):
-    r = math.pow(hsv1[0] - hsv2[0], 2)
+    dist = 0
+    if hsv1[0] > hsv2[0]:
+        dist = ( 1 - hsv1[0] ) + hsv2[0]
+    else:
+        dist = ( 1 - hsv2[0] ) + hsv1[0]
+
+    
+    if dist > abs(hsv1[0] - hsv2[0]):
+        dist = abs(hsv1[0] - hsv2[0])
+        
+    r = math.pow(dist, 2)
     g = math.pow(hsv1[1] - hsv2[1], 2)
     b = math.pow(hsv1[2] - hsv2[2], 2)
-    return math.sqrt( float(r) +float(g) + float(b) )
+
+    dist =  math.sqrt( float(r) +float(g) + float(b) )
+    return dist
+
+
+
+def distance_hue(hsv1, hsv2):
+    dist = 0
+    if hsv1[0] > hsv2[0]:
+        dist = ( 1 - hsv1[0] ) + hsv2[0]
+    else:
+        dist = ( 1 - hsv2[0] ) + hsv1[0]
+
+    
+    if dist > abs(hsv1[0] - hsv2[0]):
+        dist = abs(hsv1[0] - hsv2[0])
+        
+    r = math.pow(dist, 2)
+    return math.sqrt( float(r))
+
+
 
 #comparaison des couleurs hsv avec chaque centre et sa distance vectoriel 
-def test_hsv(data):
+def test_hsv(data,max_color):
 
     centre = couleurCentre(data)
     centre_hsv = []
@@ -690,7 +722,7 @@ def test_hsv(data):
 
     #conversion face i en hsv
     for i in range(0, len(data[1])):
-        color = t255to01(data[1][i],68)
+        color = t255to01(data[1][i],max_color)
         data_rgb.append(color)
         #print "  couleur des donnees :  " , data[1][4] , "      couleur en format 0-1 : ", color
         tab_hsv.append( colorsys.rgb_to_hsv(color[0], color[1], color[2]) )
@@ -698,17 +730,18 @@ def test_hsv(data):
 
     #conversion centre rgb to hsv
     for i in range(0, len(centre)):
-        color = t255to01(centre[i],68)
+        color = t255to01(centre[i],max_color)
         #print "  couleur des donnees :  " , data[1][4] , "      couleur en format 0-1 : ", color
         centre_hsv.append( colorsys.rgb_to_hsv(color[0], color[1], color[2]) )
 
     for j in range(0, len(centre)):
         #calcul distance
         for i in range(0, len(tab_hsv)):
-            if i==0:
-                print data[1][i], "     " , data[j][4]
+            #print data[1][i], "     " , data[j][4],
+            print tab_hsv[i], "    ", centre_hsv[j]
             print "distance facet ",i," avec centre de ", j," : ", distance_hsv(tab_hsv[i], centre_hsv[j] )
-        print "\n"
+            
+        print "\n\n"
 
     #test sur toutes les facets
     
@@ -716,28 +749,35 @@ def test_hsv(data):
     for i in range(0, len(data)):
         data_hsv.append([])
         color_center.append([])
-        
+
+     
+    Fig = plt.figure()
+    ax = plt.axes(projection='3d')   
     for s, side in enumerate(data):
         for f, (r,g,b) in enumerate(side):
-            data_hsv[s].append( colorsys.rgb_to_hsv(r, g, b) )
+            data_hsv[s].append( colorsys.rgb_to_hsv( float(r)/max_color, float(g)/max_color, float(b)/max_color) )
             min_distance = 100000
             indice = 0
             for i in range(0, len(centre_hsv)):
-                dist = distance_hsv(data[s][f], centre[i])
+                dist = distance_hsv(data_hsv[s][f], centre_hsv[i])
+                print data_hsv[s][f][0], "   ", centre_hsv[i][0]
                 if dist < min_distance:
                     min_distance = dist
                     indice = i
 	    color_center[indice].append( [r,g,b] )
 
+     
+            ax.scatter3D(data_hsv[s][f][0], data_hsv[s][f][1], data_hsv[s][f][2], c=t255to01(data[s][f],max_color), cmap=data)
+    
+    fig = plt.figure()
     for i in range(0,len(color_center) ):
 
       tabColor = []
       for j in range (0 , len(color_center[i])):
-            plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  rgb255to01(color_center[i][j], 68) )
-            plt.scatter(i, 0, s=800, marker='o', c= t255to01(centre[i],68) )
+            plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  rgb255to01(color_center[i][j], max_color) )
+            plt.scatter(i, 0, s=800, marker='o', c= t255to01(centre[i],max_color) )
    
     plt.show()    
-
 
 def sameColor(c1, c2):
     return c1[0] == c2[0] and c1[1] == c2[1] and c1[2] == c2[2]
@@ -765,6 +805,41 @@ def diffRGBCoin(tabCoin, tabCoinCheck):
             somme2[j] += tabCoinCheck[i][j]
 
     return round( float(  abs(somme1[0] - somme2[0] ) + abs(somme1[1] - somme2[1] ) + abs(somme1[2] - somme2[2] ) / 3), 2)
+
+def test_hsv_3D():
+        
+    rouge = (1,0,0)
+    vert = (0,1,0)
+    bleu = (0,0,1)
+    rose = ( (253./255.) , (108./255.), (158./255.) )
+    rose_fonce = ( (199./255.) , (21./255.), (133./255.) )
+    tab = []
+    tab.extend( (rouge,vert,bleu, rose, rose_fonce))
+
+
+    Fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    for i in range(0,len(tab)):
+        
+        hsv = colorsys.rgb_to_hsv(tab[i][0], tab[i][1], tab[i][2])
+        print hsv
+        ax.scatter3D(hsv[0], hsv[1], hsv[2], c=tab[i], cmap=tab[i])
+        ax.scatter3D(tab[i][0], tab[i][1], tab[i][2], c=tab[i], cmap=tab[i])
+    plt.show()
+
+def test_rgb_3D(data,max_color):
+        
+
+    Fig = plt.figure()
+    ax = plt.axes(projection='3d')   
+    for s, side in enumerate(data):
+        for f, (r,g,b) in enumerate(side):
+            ax.scatter3D(data[s][f][0], data[s][f][1], data[s][f][2], c=t255to01(data[s][f],max_color), cmap=data)
+
+            
+ 
+    plt.show()
+
     
 
 # retourne la difference la plus petite et l'arangement de couleur qui lui correspond
@@ -1105,10 +1180,12 @@ data_turned_coin_ok = [
 diff = calculDiffCentre(data)
 diffCoin, diffCote = calculDiffCentreCoinCote(data)
 
-#test_hsv(data)
+#test_hsv_3D()
+test_hsv(data,68)
+test_rgb_3D(data,68)
 #draw_diffRGB(data)
 #draw_rgb_debut(data)
-draw2(data_turned)
+#draw2(data_turned)
 #draw(data)
 
 
