@@ -37,10 +37,9 @@ def coord2(s,f):
 
 # assemble x,y coordinates and sticker colors into three arrays
 def donnees(data):
-    x, y, color, color_true, group_color,tab_inter = [], [], [], [], [],[]
+    x, y, color, color_scan, group_color, tab_new_rgb = [], [], [], [], [], []
     max_reading = 0
     
-    tab_new_rgb_centre=[]
 
     for side in data:
         for facet in side:
@@ -53,16 +52,8 @@ def donnees(data):
             x.append(tx)
             y.append(ty)
             color.append([round(r)/round(max_reading), round(g)/round(max_reading), round(b)/round(max_reading)])
-            tab_inter.append([r,g,b])
-            rateRed = (round(r)/round(max_reading)) * 100
-            rateGreen =(round(g)/round(max_reading)) * 100
-            rateBlue = (round(b)/round(max_reading)) * 100
-            color_true.append([r, g, b])
-            new_r = round(rateRed/(rateRed+rateGreen+rateBlue)*100)
-            new_g = round(rateGreen/(rateRed+rateGreen+rateBlue)*100)
-            new_b = round(rateBlue/(rateRed+rateGreen+rateBlue)*100)
-        tab_new_rgb_centre.append([new_r,new_g,new_b])
-    return x,y,color, tab_new_rgb_centre, color_true, max_reading,tab_inter
+            color_scan.append([r, g, b])
+    return x,y,color, color_scan, max_reading
 
 # draw the unfolding
 def draw(data):
