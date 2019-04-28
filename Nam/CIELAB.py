@@ -53,11 +53,7 @@ def donnees(data):
             y.append(ty)
             color.append([round(r)/round(max_reading), round(g)/round(max_reading), round(b)/round(max_reading)])
             color_scan.append([r, g, b])
-            new_r = round(rateRed/(rateRed+rateGreen+rateBlue)*100)
-            new_g = round(rateGreen/(rateRed+rateGreen+rateBlue)*100)
-            new_b = round(rateBlue/(rateRed+rateGreen+rateBlue)*100)
-            tab_new_rgb.append([new_r,new_g,new_b])
-    return x,y,color, tab_new_rgb, color_scan, max_reading
+    return x,y,color, color_scan, max_reading
 
 # draw the unfolding
 def draw(data):
