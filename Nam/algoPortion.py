@@ -80,9 +80,8 @@ def algoPortion(data,isDraw):
             difG = abs(tab_coeff[i][1]-tab_new_rgb_centre[j][1])
             difB = abs(tab_coeff[i][2]-tab_new_rgb_centre[j][2])
             moy = (difR +difG+difB)/3
-            """if i==24:
-               #print moy , "  ", j , "  ", tab_new_rgb_centre[j], "   " , tab_coeff[i]
-            """
+            if i==24:
+               print moy , "  ", j , "  ", tab_new_rgb_centre[j], "   " , tab_coeff[i]
             if(moy <= min):
                 var = j
                 min = moy
@@ -112,16 +111,16 @@ def draw(data):
             plt.scatter(i, p+yplacer , s=800, marker='o', c=cube[k])
             k = k +1
         print '\n'
-    #plt.savefig('fileName.png')
+    plt.savefig('fileName.png')
     plt.show()
   
-"""  
-  plt.scatter(x, y, s=800, marker='s', c=color)
+
+    plt.scatter(x, y, s=800, marker='s', c=color)
     plt.title('Rubik\'s cube unfolding')
     plt.axis('off')
     plt.savefig('init_fileName.png')
     plt.show() 
-"""
+
     
 def comparaisonStat(data1, data2):
     compt = 0
@@ -190,7 +189,23 @@ data_turned_nam =[
 ],[[33, 11, 3],[33, 12, 3],[39, 13, 6],[44, 56, 47],[41, 50, 48],[46, 60, 50],[52, 66, 54],[41, 55, 45],[46, 61, 50],
 ],]
 
+data_andre_test =[
+[[16, 56, 39],[15, 53, 38],[16, 54, 37],[16, 53, 38],[17, 62, 43],[16, 52, 38],[15, 55, 38],[17, 55, 39],[16, 57, 37],
+],[[61, 91, 54],[58, 88, 53],[58, 89, 51],[59, 87, 52],[67, 101, 57],[56, 82, 51],[58, 89, 51],[57, 87, 54],[59, 90, 51],
+],[[42, 69, 50],[40, 62, 50],[40, 66, 47],[35, 60, 43],[50, 77, 59],[36, 60, 45],[39, 64, 46],[41, 66, 50],[38, 65, 47],
+],[[48, 73, 58],[42, 65, 53],[46, 71, 54],[44, 67, 54],[56, 84, 67],[46, 68, 54],[47, 73, 54],[43, 68, 53],[46, 70, 53],
+],[[34, 16, 7],[35, 15, 7],[34, 15, 6],[31, 14, 6],[37, 15, 7],[31, 15, 6],[33, 16, 6],[34, 15, 6],[33, 16, 6],
+],[[6, 10, 10],[5, 9, 12],[5, 11, 11],[5, 10, 11],[5, 10, 12],[5, 9, 11],[6, 12, 11],[5, 10, 11],[6, 13, 11],
+],]
 
+data_ref_last_scan2=[
+[[8, 20, 21],[8, 19, 21],[41, 26, 9],[8, 20, 21],[3, 8, 7],[9, 21, 22],[8, 20, 21],[8, 21, 22],[8, 20, 21],
+],[[44, 27, 9],[44, 27, 9],[7, 19, 20],[43, 27, 9],[10, 9, 3],[33, 12, 7],[42, 27, 9],[45, 29, 9],[9, 45, 13],
+],[[60, 90, 56],[63, 94, 56],[62, 99, 55],[66, 101, 58],[22, 34, 26],[64, 100, 57],[62, 99, 55],[66, 103, 58],[62, 99, 55],
+],[[33, 12, 7],[34, 13, 7],[31, 12, 7],[33, 12, 7],[32, 11, 7],[41, 25, 9],[31, 12, 6],[32, 12, 7],[31, 12, 6],
+],[[62, 59, 12],[62, 59, 12],[55, 55, 11],[61, 59, 12],[29, 26, 8],[62, 60, 12],[57, 56, 11],[61, 60, 12],[57, 56, 12],
+],[[45, 28, 9],[9, 44, 14],[9, 45, 13],[9, 46, 13],[4, 18, 7],[9, 44, 14],[9, 45, 13],[9, 46, 14],[8, 44, 13],
+],]
 
 
 
@@ -198,13 +213,17 @@ data_turned_nam =[
 #draw(data_turned_prof)
 
 #draw(data_ref_last_scan)
+draw(data_ref_last_scan2)
 
+#draw(data_andre_test)
+
+""""
 draw(data_turned_last_scan)
 res = algoPortion(data_turned_last_scan,False)
 comparaisonStat(data_ref_last_scan,res)
 
-"""
 draw(data_turned_nam)
 res = algoPortion(data_turned_nam,False)
 comparaisonStat(data_correct_nam,res)
+
 """

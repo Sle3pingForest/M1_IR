@@ -38,6 +38,7 @@ from data.data_1004_max_L_1_3pi import data_1004_max_L_1_3pi
 from data.data_1004_max_S_0_3pi import data_1004_max_S_0_3pi
 from data.data_1004_max_L_0_3pi import data_1004_max_L_0_3pi
 from data.data_turned_1004_max_S_0_3pi import data_turned_1004_max_S_0_3pi
+from data.data_1104_max_R_0_3pi import data_1104_max_R_0_3pi
 
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
@@ -500,8 +501,8 @@ def draw2(data):
 
     """
 
-    datas = [data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
-    #showData(datas,True)
+    datas = [data_1104_max_R_0_3pi,data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
+    showData(datas,True)
 
     # CA OUVRE 2 FENETRE YOUPI
 
