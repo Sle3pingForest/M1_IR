@@ -239,6 +239,7 @@ public class Main {
 		}
 		donnee.append("]");
 		BufferedWriter writer = new BufferedWriter(new FileWriter("data_2804_prof_pres_720.txt"));
+
 	    writer.write(donnee.toString());
 	     
 	    writer.close();

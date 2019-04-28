@@ -17,6 +17,16 @@ from __future__ import division
 import matplotlib.pyplot as plt
 import numpy as np
 
+matrixConversion = [[0.412453, 0.357580, 0.180423],
+                    [0.212671, 0.715160, 0.072169],
+                    [0.019334, 0.119193, 0.950227]]
+
+def func(t):
+    if(t > 0.008856):
+        return np.power(t,1/3.0);
+    else:
+        return 7.787 * t +16/116.0;
+
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
     x,y = [[0,0],[0,30],[-30,0],[0,-30],[30,0],[60,0]][s]
@@ -44,17 +54,13 @@ def donnees(data):
             y.append(ty)
             color.append([round(r)/round(max_reading), round(g)/round(max_reading), round(b)/round(max_reading)])
             tab_inter.append([r,g,b])
-            #color.append([round(r)/255, round(g)/255, round(b)/255])
-            if f == 4:
-                rateRed = (round(r)/round(max_reading)) * 100
-                rateGreen =(round(g)/round(max_reading)) * 100
-                rateBlue = (round(b)/round(max_reading)) * 100
-                print 'Taux rouge: ', rateRed , ' - Taux Vert: ', rateGreen, ' - Taux Bleu: ', rateBlue
-                color_true.append([r, g, b])
-                new_r = round(rateRed/(rateRed+rateGreen+rateBlue)*100)
-                new_g = round(rateGreen/(rateRed+rateGreen+rateBlue)*100)
-                new_b = round(rateBlue/(rateRed+rateGreen+rateBlue)*100)
-                print '% rouge: ', new_r , ' - % Vert: ', new_g, ' - % Bleu: ', new_b
+            rateRed = (round(r)/round(max_reading)) * 100
+            rateGreen =(round(g)/round(max_reading)) * 100
+            rateBlue = (round(b)/round(max_reading)) * 100
+            color_true.append([r, g, b])
+            new_r = round(rateRed/(rateRed+rateGreen+rateBlue)*100)
+            new_g = round(rateGreen/(rateRed+rateGreen+rateBlue)*100)
+            new_b = round(rateBlue/(rateRed+rateGreen+rateBlue)*100)
         tab_new_rgb_centre.append([new_r,new_g,new_b])
     return x,y,color, tab_new_rgb_centre, color_true, max_reading,tab_inter
 
