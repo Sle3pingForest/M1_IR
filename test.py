@@ -1114,11 +1114,8 @@ diffCoin, diffCote = calculDiffCentreCoinCote(data)
 #test_hsv(data)
 #draw_diffRGB(data)
 #draw_rgb_debut(data)
-<<<<<<< HEAD
 #draw2(data_turned)
-=======
 draw2(data_2804_rubiksdamiennoir)
->>>>>>> b8e4b2513bc30ce1e488e56de28dcacf2e575479
 #draw(data)
 
 
