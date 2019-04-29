@@ -238,7 +238,8 @@ public class Main {
 			donnee.append("\n],");
 		}
 		donnee.append("]");
-		BufferedWriter writer = new BufferedWriter(new FileWriter("data_1204_rubiks1_max_S_0_3pi.txt"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter("data_2804_rubiksdamiennoir.txt"));
+
 	    writer.write(donnee.toString());
 	     
 	    writer.close();
@@ -324,19 +325,22 @@ public class Main {
 		int angle = 0;
 		
 		if (compt == 0) {
-			angle = 560;
+			//angle = 560;
+			angle = 530;
 		} else if (orientation.value == 5) {
 			//angle = 560;
-			angle = 770;
+			angle = 700;
 		} else if (orientation.value % 2 == 0){
 			//angle = 400;
-			angle = 600;
+			//angle = 600;
+			angle = 560;
 			
 		} else {
 			//angle = 400;
-			angle = 540;
+			//angle = 540;
+			angle = 500;
 		} 
-
+		 
 		/*
 		 cran capteur 1 
 		if (compt == 0) {

@@ -38,12 +38,24 @@ from data.data_1004_max_L_1_3pi import data_1004_max_L_1_3pi
 from data.data_1004_max_S_0_3pi import data_1004_max_S_0_3pi
 from data.data_1004_max_L_0_3pi import data_1004_max_L_0_3pi
 from data.data_turned_1004_max_S_0_3pi import data_turned_1004_max_S_0_3pi
+from data.data_1104_max_R_0_3pi import data_1104_max_R_0_3pi
 from data.test_feuille_couleur import test_feuille_couleur
 from data.test_feuille_couleur_pres import test_feuille_couleur_pres
 from data.test_feuille_couleur_tres_pres import test_feuille_couleur_tres_pres
 from data.test_rubiks_rube2 import test_rubiks_rube2
 from data.data_1204_max_S_0_3pi import data_1204_max_S_0_3pi
 from data.data_1204_rubiks1_max_S_0_3pi import data_1204_rubiks1_max_S_0_3pi
+from data.data_rubiks4_2804_toucher import data_rubiks4_2804_toucher
+from data.data_rubiks4_2804 import data_rubiks4_2804
+from data.data_rubiks4_2804_centrer import data_rubiks4_2804_centrer
+from data.data_rubiks4_2804_rgbmode import data_rubiks4_2804_rgbmode
+from data.data_2804_800_prof import data_2804_800_prof
+from data.data_2804_800 import data_2804_800
+from data.data_2804_750_prof import data_2804_750_prof
+from data.data_2804_prof_pres_720 import data_2804_prof_pres_720
+from data.data_2804_prof_pres import data_2804_prof_pres
+from data.data_2804_rubiksponce import data_2804_rubiksponce
+from data.data_2804_rubiksdamiennoir import data_2804_rubiksdamiennoir
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
     x,y = [[0,0],[0,30],[-30,0],[0,-30],[30,0],[60,0]][s]
@@ -454,14 +466,15 @@ def draw2(data):
     for i in range(0,8):
 
         for j in range(0,3):
-            couleurTabCoin = [ round( tabCoin[i][j][0] )/68 , round( tabCoin[i][j][1])/68 , round( tabCoin[i][j][2])/68 ]
-            couleurCentreAssocie = [ round( tabCoinCheck[ test_coin[i] ][j][0])/68 , round( tabCoinCheck[ test_coin[i] ][j][1])/68 , round( tabCoinCheck[ test_coin[i] ][j][2])/68  ]
-            couleurCentre = [ round( tabCoinCheck[ i ][j][0])/68 , round( tabCoinCheck[ i ][j][1])/68 , round( tabCoinCheck[ i ][j][2])/68  ]
+            couleurTabCoin = [ round( tabCoin[i][j][0] )/max_color , round( tabCoin[i][j][1])/max_color , round( tabCoin[i][j][2])/max_color ]
+            couleurCentreAssocie = [ round( tabCoinCheck[ test_coin[i] ][j][0])/max_color , round( tabCoinCheck[ test_coin[i] ][j][1])/max_color , round( tabCoinCheck[ test_coin[i] ][j][2])/max_color  ]
+            
+            couleurCentre = [ round( tabCoinCheck[ i ][j][0])/max_color, round( tabCoinCheck[ i ][j][1])/max_color , round( tabCoinCheck[ i ][j][2])/max_color  ]
             if j == 0:
                 decalage += 5
             plt.scatter(i*3+j + decalage, 0, s=800, marker='o', c= couleurTabCoin )
             plt.scatter(i*3+j + decalage, 5, s=800, marker='o', c= couleurCentreAssocie )
-            plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurCentre )
+            #plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurCentre )
     
     #plt.savefig('tri_coin.png')
     plt.show()
@@ -505,7 +518,8 @@ def draw2(data):
 
     """
 
-    datas = [test_feuille_couleur, test_feuille_couleur_pres,test_feuille_couleur_tres_pres, test_rubiks_rube2, data_1204_rubiks1_max_S_0_3pi]#data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
+
+    datas = [data_2804_rubiksponce,data_2804_rubiksdamiennoir,data_2804_prof_pres_720,data_2804_prof_pres]#data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
     showData(datas,True)
 
     # CA OUVRE 2 FENETRE YOUPI
@@ -1100,7 +1114,11 @@ diffCoin, diffCote = calculDiffCentreCoinCote(data)
 #test_hsv(data)
 #draw_diffRGB(data)
 #draw_rgb_debut(data)
+<<<<<<< HEAD
 #draw2(data_turned)
+=======
+draw2(data_2804_rubiksdamiennoir)
+>>>>>>> b8e4b2513bc30ce1e488e56de28dcacf2e575479
 #draw(data)
 
 
