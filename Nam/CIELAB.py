@@ -27,6 +27,13 @@ def func(t):
     else:
         return 7.787 * t +16/116.0;
 
+def ecart_delta_E(cVar,cRef):
+    delta_b_p2=(cVar[0] - cRef[0])**2
+    delta_a_p2=(cVar[1] - cRef[1])**2
+    delta_L_p2=(cVar[2] - cRef[2])**2
+    delta_E = (delta_b_p2+delta_a_p2+delta_L_p2)**1/2
+    return delta_E
+    
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
     x,y = [[0,0],[0,30],[-30,0],[0,-30],[30,0],[60,0]][s]
@@ -37,10 +44,8 @@ def coord2(s,f):
 
 # assemble x,y coordinates and sticker colors into three arrays
 def donnees(data):
-    x, y, color, color_scan, group_color, tab_new_rgb = [], [], [], [], [], []
+    x, y, color, color_scan,color_center = [], [], [], [],[]
     max_reading = 0
-    
-
     for side in data:
         for facet in side:
             for reading in facet:
@@ -52,95 +57,78 @@ def donnees(data):
             x.append(tx)
             y.append(ty)
             color.append([round(r)/round(max_reading), round(g)/round(max_reading), round(b)/round(max_reading)])
-            color_scan.append([r, g, b])
-    return x,y,color, color_scan, max_reading
+            if(f == 4):
+                color_center.append([r,g,b])
+            else:
+                color_scan.append([r, g, b])
+    return x,y,color, color_scan,color_center, max_reading
 
 # draw the unfolding
 def draw(data):
-    x, y, color, tab_new_rgb_centre, c, max_reading,tab_inter = donnees(data)
-   
+    x, y, color, color_scan, color_center, max_reading = donnees(data)
     n = 9
     m = 6
    
-    color_center = []
-    tab_coeff = []
+    color_solve = []
+    tab_LAB = []
+    tab_LAB_center = []
     for k in range(0,6):
-      color_center.append([])
+      color_solve.append([])
 
 
       
     compteur = 0
-    
+    #CALCUL LAB
     for s, side in enumerate(data):
         for f, (r,g,b) in enumerate(side):
-
-            
-            indice = 0
-            size = len(c)
-        	  
-                
-            cfR =round(r/(r+g+b)*100,0)
-            cfG =round(g/(r+g+b)*100,0)
-            cfB =round(b/(r+g+b)*100,0)
-            tab_coeff.append([cfR,cfG,cfB])
-    
-    print tab_new_rgb_centre
-    print '\n'
-    for i in range(0,6):
-        for j in range(0,9):
-            if(j == 4):
-                print "*",tab_coeff[i*9+j]
+            cie = np.dot(matrixConversion, [r,g,b])
+            cie[0] = cie[0]/0.950456
+            cie[2] = cie[2]/1.088754
+            #calcule L
+            L = round(116 * np.power(cie[1], 1/3.0) - 16.0 if cie[1] > 0.008856 else 903.3 * cie[1],3)
+            #calcule a
+            a = round(500*(func(cie[0]) - func(cie[1])),3)
+            #calcul b
+            b = round(200*(func(cie[1]) - func(cie[2])),3)
+            if(f == 4):
+                tab_LAB_center.append([b,a,L])
             else:
-                print tab_coeff[i*9+j]
-        print '\n'
-        
-    for i in range(0,54):
-        var = -1
-        test = 2500;
-        test1 = 2500;
-        test2 = 2500;
-        min = 25000
-        for j in range(0,len(tab_new_rgb_centre)):
-            difR = abs(tab_coeff[i][0]-tab_new_rgb_centre[j][0])
-            difG = abs(tab_coeff[i][1]-tab_new_rgb_centre[j][1])
-            difB = abs(tab_coeff[i][2]-tab_new_rgb_centre[j][2])
-            moy = (difR +difG+difB)/3
-            if i==24:
-                print moy , "  ", j , "  ", tab_new_rgb_centre[j], "   " , tab_coeff[i]
-            if(moy <= min):
-                var = j
-                min = moy
-            
-        color_center[var].append(tab_inter[i])
+                tab_LAB.append([b,a,L])
+    
 
-            
-    test_coeff= color_center
-    tamere = []
-    tonpere = []
-    for i in range (0, len(c)):
-        tamere.append( [round(c[i][0])/max_reading,  round(c[i][1]) / max_reading, round(c[i][2])/max_reading] )
+    for i in range (0,len(tab_LAB)):
+        var = 0;
+        min_ecart = 10000000
+        for j in range (0,len(tab_LAB_center)):
+            ecart_E = ecart_delta_E(tab_LAB[i],tab_LAB_center[j])
+            if(min_ecart > ecart_E):
+                min_ecart = ecart_E
+                var = j     
+        color_solve[var].append(color_scan[i])
+    print color_solve
+    centreRef = []
+    color_res= []
+    for i in range (0, 6):
+        centreRef.append([round(color_center[i][0])/max_reading,  round(color_center[i][1]) / max_reading, round(color_center[i][2])/max_reading] )
          
-
     k = 0;
-    for i in range(0,len(c)):
-        plt.scatter(i, 0, s=800, marker='s', c=tamere[i])
+    for i in range(0,6):
+        plt.scatter(i, 0, s=800, marker='s', c=centreRef[i])
         p = 5
-        for j in range(0, len(test_coeff[i]) ):
-            print test_coeff[i][j]
+        for j in range(0, len(color_center)):
             yplacer = j+10
             p +=10
-            tonpere.append([round(test_coeff[i][j][0]/max_reading,3), round(test_coeff[i][j][1]/max_reading,3), round(test_coeff[i][j][2]/max_reading,3)])
-            plt.scatter(i, p+yplacer , s=800, marker='o', c=tonpere[k])
+            color_res.append([round(color_solve[i][j][0]/max_reading,3), round(color_solve[i][j][1]/max_reading,3), round(color_solve[i][j][2]/max_reading,3)])
+            plt.scatter(i, p+yplacer , s=800, marker='o', c=color_res[k])
             k = k +1
-        print '\n'
-    plt.savefig('unfolding.png')
+    plt.savefig('LAB_damien_solve.png')
     plt.show()
     
 
     plt.scatter(x, y, s=800, marker='s', c=color)
     plt.title('Rubik\'s cube unfolding')
     plt.axis('off')
-    plt.savefig('out.png')
+    plt.savefig('LAB_Init.png')
     plt.show()    
     return color_center
     
@@ -165,48 +153,14 @@ data = [
 ],[[126, 198, 169],[143, 247, 173],[145, 248, 169],[156, 255, 187],[189, 255, 226],[154, 255, 185],[138, 238, 165],[139, 241, 170],[151, 255, 175],
 ],[[130, 193, 181],[167, 255, 200],[169, 255, 197],[171, 255, 204],[222, 255, 250],[175, 255, 202],[161, 252, 189],[165, 255, 197],[170, 255, 192],
 ],]
-"""[[9, 11, 8],[28, 38, 21],[37, 55, 26],[30, 40, 22],[13, 20, 11],[35, 47, 25],[44, 64, 32],[33, 47, 24],[44, 65, 32],
-],[[1, 2, 4],[2, 4, 6],[3, 6, 5],[2, 5, 6],[1, 2, 3],[2, 3, 5],[5, 9, 7],[2, 3, 6],[1, 3, 4],
-],[[31, 33, 40],[37, 48, 41],[51, 67, 57],[38, 42, 45],[41, 42, 52],[46, 59, 52],[49, 61, 58],[34, 42, 39],[48, 64, 53],
-],[[7, 33, 24],[13, 45, 30],[14, 50, 31],[12, 38, 27],[3, 20, 17],[10, 34, 23],[11, 43, 27],[9, 28, 24],[8, 37, 25],
-],[[22, 4, 2],[28, 9, 3],[40, 13, 3],[38, 12, 4],[28, 5, 2],[33, 8, 3],[40, 14, 4],[32, 10, 3],[35, 12, 3],
-],[[19, 21, 25],[39, 50, 41],[48, 60, 51],[46, 57, 47],[36, 35, 42],[37, 44, 42],[53, 63, 52],[35, 46, 39],[43, 60, 49],
-],]"""
 
-data_turned =[
-[[42, 54, 50],[39, 53, 45],[50, 66, 56],[38, 56, 28],[28, 41, 24],[41, 59, 30],[42, 61, 29],[38, 56, 28],[37, 55, 27],
-],[[3, 6, 6],[4, 7, 7],[5, 8, 7],[4, 8, 7],[1, 3, 5],[4, 8, 9],[5, 9, 8],[4, 8, 7],[4, 8, 7],
-],[[39, 51, 43],[41, 56, 44],[51, 66, 52],[42, 53, 50],[41, 49, 50],[47, 61, 54],[48, 60, 54],[39, 52, 46],[49, 66, 55],
-],[[11, 44, 28],[12, 45, 30],[14, 48, 31],[11, 42, 26],[8, 34, 24],[12, 42, 27],[12, 44, 28],[11, 41, 27],[11, 44, 28],
-],[[35, 52, 26],[36, 54, 27],[37, 53, 25],[38, 12, 4],[29, 7, 2],[36, 11, 3],[38, 12, 4],[35, 13, 4],[37, 13, 4],
-],[[33, 11, 3],[33, 12, 3],[39, 13, 6],[44, 56, 47],[41, 50, 48],[46, 60, 50],[52, 66, 54],[41, 55, 45],[46, 61, 50],
+data_scan_correct_damien = [
+[[68, 106, 59],[65, 100, 57],[63, 101, 56],[66, 103, 58],[67, 102, 57],[65, 100, 58],[63, 100, 56],[66, 102, 58],[62, 99, 56],
+],[[8, 21, 22],[32, 12, 7],[8, 45, 13],[44, 27, 9],[45, 27, 9],[44, 28, 8],[43, 28, 9],[43, 27, 8],[43, 27, 9],
+],[[46, 29, 9],[9, 45, 14],[9, 45, 13],[9, 47, 14],[9, 45, 13],[9, 45, 14],[9, 45, 13],[9, 46, 14],[10, 48, 13],
+],[[34, 13, 7],[33, 13, 7],[31, 12, 6],[33, 12, 7],[34, 12, 7],[33, 12, 7],[31, 12, 6],[45, 28, 9],[31, 12, 6],
+],[[8, 21, 22],[8, 20, 21],[42, 27, 9],[8, 20, 21],[9, 21, 22],[9, 21, 22],[8, 20, 21],[8, 21, 21],[8, 20, 21],
+],[[62, 59, 12],[61, 59, 12],[57, 57, 11],[59, 57, 12],[63, 59, 13],[61, 59, 12],[58, 57, 11],[60, 58, 12],[59, 58, 12],
 ],]
-"""[[40, 64, 49],[39, 60, 48],[39, 64, 46],[35, 57, 44],[45, 72, 54],[36, 60, 44],[38, 63, 46],[41, 65, 50],[40, 66, 47],
-],[[60, 87, 52],[55, 79, 50],[58, 87, 50],[56, 82, 52],[63, 95, 54],[57, 86, 53],[45, 70, 54],[46, 69, 55],[45, 68, 52],
-],[[6, 11, 11],[5, 10, 12],[15, 52, 36],[6, 10, 11],[5, 10, 12],[16, 51, 37],[6, 11, 10],[6, 11, 11],[15, 53, 36],
-],[[60, 89, 52],[56, 81, 50],[57, 85, 50],[43, 65, 51],[60, 87, 69],[42, 63, 52],[46, 70, 53],[45, 64, 53],[46, 70, 53],
-],[[6, 11, 12],[15, 51, 39],[15, 53, 36],[5, 10, 11],[14, 42, 37],[15, 49, 37],[5, 10, 10],[17, 53, 39],[16, 56, 37],
-],[[35, 16, 7],[34, 15, 7],[34, 17, 6],[32, 15, 6],[36, 16, 6],[30, 14, 6],[33, 16, 6],[35, 16, 7],[33, 16, 6],
-],]
-
-
-
-[[4, 4, 8],[4, 5, 8],[4, 6, 8],[3, 5, 7],[5, 7, 9],[3, 6, 7],[3, 5, 8],[4, 5, 7],[4, 5, 8]],
-[[27, 39, 44],[30, 44, 45],[26, 38, 43],[46, 52, 37],[59, 68, 45],[47, 52, 37],[22, 9, 4],[26, 10, 5],[24, 8, 5]],
-[[39, 46, 35],[29, 10, 5],[32, 37, 45],[47, 54, 38],[37, 19, 7],[36, 43, 46],[32, 34, 28],[29, 10, 4],[30, 33, 43]],
-[[27, 39, 45],[31, 45, 46],[28, 39, 44],[38, 43, 47],[52, 59, 62],[38, 43, 50],[22, 8, 4],[26, 9, 4],[20, 7, 4]],
-[[38, 44, 35],[35, 48, 50],[27, 32, 43],[48, 54, 39],[47, 64, 62],[36, 43, 48],[41, 46, 37],[35, 48, 48],[30, 35, 44]],
-[[11, 29, 32],[13, 32, 34],[9, 25, 29],[12, 33, 33],[16, 42, 41],[10, 33, 34],[11, 30, 32],[13, 33, 34],[10, 28, 30]],
-]
-"""
-
-#draw(data)
-draw(data_turned)
-#comparaisonStat(data_turned,data2)
-""" 
-
-[52, 60, 62]
-[24, 29, 40]
-[15, 41, 40]
-
-"""
+    
+draw(data_scan_correct_damien)

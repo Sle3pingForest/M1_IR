@@ -1143,10 +1143,13 @@ def calculDiffCentreCoinCote(data, mode="uniforme"):
                         sommeCoin[i] += colordiff[i]
                     else:
                         sommeCote[i] += colordiff[i]
+        print "\ncote: ", s
         #calcul moyenne diff
         for j in range(0,3):
             sommeCoin[j] = sommeCoin[j]/4
             sommeCote[j] = sommeCote[j]/4
+            print "    ecart diff coin:", float(sommeCoin[j])/tab[s][j], "      " , tab[s][j] , "   ", sommeCoin[j]
+            print "    ecart diff cote:", float(sommeCote[j])/tab[s][j], "      " , tab[s][j] , "   ", sommeCote[j], "\n"
         moyenneDiffCoin.append(sommeCoin)
         moyenneDiffCote.append(sommeCote)
     return moyenneDiffCoin,  moyenneDiffCote
@@ -1188,11 +1191,11 @@ test_hsv(data,68)
 test_rgb_3D(data,68)
 #draw_diffRGB(data)
 #draw_rgb_debut(data)
-<<<<<<< HEAD
 #draw2(data_turned)
-=======
 draw2(data_2804_rubiksdamiennoir)
->>>>>>> b8e4b2513bc30ce1e488e56de28dcacf2e575479
+draw_rgb_debut(data)
+#draw2(data_turned)
+#draw2(data_2804_rubiksdamiennoir)
 #draw(data)
 
 
