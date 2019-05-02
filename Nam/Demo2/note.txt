@@ -1,0 +1,4 @@
+
+
+on a environ = 95.8333333333 %  de correct donc  4.2% erreur
+
