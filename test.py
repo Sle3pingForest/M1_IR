@@ -558,6 +558,145 @@ def draw3(data):
     for i in range(0, len(tabPref)):
         coinPref.append( choixMeilleurCentre(tabPref[i]) )
 
+
+        
+    test_coin = repartition(tabPref)
+    print "repartition : ",test_coin
+    nb_erreur = 0
+    for i in range(0, len(test_coin)):
+        if test_coin[i] != data_turned_coin_ok[i][1]:
+            nb_erreur += 1
+            #print test_coin[i] , "     " , data_coin_ok[i][1]
+
+    print float(nb_erreur)/8 *100 , "% d erreur  " ,   nb_erreur , "   sur " , len(test_coin)
+
+    print "affectation ", test_coin
+    
+    plt.figure(0)
+    
+    decalage = 0
+    for i in range(0,8):
+
+        for j in range(0,3):
+            couleurTabCoin = [ round( tabCoin[i][j][0] )/max_color , round( tabCoin[i][j][1])/max_color , round( tabCoin[i][j][2])/max_color ]
+            couleurCentreAssocie = [ round( tabCoinCheck[ test_coin[i] ][j][0])/max_color , round( tabCoinCheck[ test_coin[i] ][j][1])/max_color , round( tabCoinCheck[ test_coin[i] ][j][2])/max_color  ]
+            
+            couleurCentre = [ round( tabCoinCheck[ i ][j][0])/max_color, round( tabCoinCheck[ i ][j][1])/max_color , round( tabCoinCheck[ i ][j][2])/max_color  ]
+            if j == 0:
+                decalage += 5
+            plt.scatter(i*3+j + decalage, 0, s=800, marker='o', c= couleurTabCoin )
+            plt.scatter(i*3+j + decalage, 5, s=800, marker='o', c= couleurCentreAssocie )
+            #plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurCentre )
+    
+    #plt.savefig('tri_coin.png')
+    plt.show()
+
+    """
+    for i in range(0,len(tabCoin)):
+        tabIndice.append( coinPref[i][1])
+        indice = coinPref[i][1]
+        #t , tt, ttt= choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[indice])
+        #tabFinal.append( tt )
+
+    nb_erreur = 0
+    for i in range(0, len(tabIndice)):
+        if tabIndice[i] != data_turned_coin_ok[i][1]:
+            nb_erreur += 1
+
+    print float(nb_erreur)/8 *100 , "% d erreur  " ,   nb_erreur , "   sur " , len(tabCoin)
+    """
+    copieCheck = tabCoinCheck
+    tabFigure = ['f', 'g', 'h', 'j' ,'k', 'l', 'm', 'n']
+
+    #print " association " , tabFinal
+    # print " coin centre " , copieCheck
+    """
+    plt.figure(0)
+    
+    decalage = 0
+    for i in range(0,8):
+
+        for j in range(0,3):
+            couleurTabCoin = [ round( tabCoin[i][j][0] )/68 , round( tabCoin[i][j][1])/68 , round( tabCoin[i][j][2])/68 ]
+            couleurCentreAssocie = [ round( tabCoinCheck[ tabIndice[i] ][j][0])/68 , round( tabCoinCheck[ tabIndice[i] ][j][1])/68 , round( tabCoinCheck[ tabIndice[i] ][j][2])/68  ]
+            if j == 0:
+                decalage += 5
+            plt.scatter(i*3+j + decalage, 0, s=800, marker='o', c= couleurCentreAssocie )
+            plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurTabCoin )
+
+    
+    #plt.savefig('tri_coin.png')
+    plt.show()
+
+    """
+
+
+    datas = [data_0105_rubiksdamienblanc, data_2804_rubiksdamiennoir,data_rubiksponce,data_rubiksdamiennoir,data_2804_prof_pres]#data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
+    showData(datas,True)
+
+    # CA OUVRE 2 FENETRE YOUPI
+
+
+#############################
+def draw3(data):
+    x, y, color, c, max_color = donnees(data)   
+    color_center = []
+    tabPref = [] 
+    cotePref = [] 
+    tabCote = tabAreteCouleur(data)
+    tab_coeff = {}
+    for k in range(0,6):
+      color_center.append([])
+    for k in range(0,12):  
+        tabPref.append([])
+    
+    tabCoteCheck = couleurArete(data)
+
+
+    # stocke les moyennes des differences les plus basses pour chaque coin centre
+    for i in range(0, len(tabCote)): #parcours tous les coin 
+        for j in range(0,len(tabCoteCheck)): #parcours tous les triplets de couleurs des centre a comparer
+            #print tabCoin[i], "    " , tabCoinCheck[j]
+            t, tt = choixPlusPetiteDiffDoublons(tabCote[i], tabCoteCheck[j])
+            tabPref[i].append(t)
+            
+    for i in range(0, len(tabPref)):
+        cotePref.append( choixMeilleurCentre(tabPref[i]) )
+
+
+        
+    test_cote = repartition(tabPref)
+    print "repartition : ",test_cote
+
+    nb_erreur = 0
+    for i in range(0, len(test_cote)):
+        if test_cote[i] != data_cote_ok[i][1]:
+            nb_erreur += 1
+            #print test_coin[i] , "     " , data_coin_ok[i][1]
+
+    print round(float(nb_erreur)/len(test_cote) *100,2) , "% d erreur  " ,   nb_erreur , "   sur " , len(test_cote)
+
+
+    plt.figure(0)
+    
+    decalage = 0
+    for i in range(0,12):
+
+        for j in range(0,2):
+            couleurTabCote = [ round( tabCote[i][j][0] )/max_color , round( tabCote[i][j][1])/max_color , round( tabCote[i][j][2])/max_color ]
+            couleurCentreAssocie = [ round( tabCoteCheck[ test_cote[i] ][j][0])/max_color , round( tabCoteCheck[ test_cote[i] ][j][1])/max_color , round( tabCoteCheck[ test_cote[i] ][j][2])/max_color  ]
+            
+            couleurCentre = [ round( tabCoteCheck[ i ][j][0])/max_color, round( tabCoteCheck[ i ][j][1])/max_color , round( tabCoteCheck[ i ][j][2])/max_color  ]
+            if j == 0:
+                decalage += 5
+            plt.scatter(i*3+j + decalage, 0, s=800, marker='o', c= couleurTabCote )
+            plt.scatter(i*3+j + decalage, 5, s=800, marker='o', c= couleurCentreAssocie )
+            #plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurCentre )
+    
+    #plt.savefig('tri_coin.png')
+    plt.show()
+    
+    """
     tabFinal = []
     for i in range(0,len(tabCoin)):
         indice = coinPref[i][1]
@@ -582,7 +721,7 @@ def draw3(data):
             plt.scatter(j, 0, s=800, marker='o', c= t )
             plt.scatter(j, 10, s=800, marker='o', c= tt )
     plt.show()
-
+"""
 """
 def repartitionParPosition(data):
     tab = positionnement(data)
@@ -1259,6 +1398,9 @@ data_turned_coin_ok = [
     [0,2], [1,0], [2,3], [3,1], [4,6], [5,4], [6,7], [7,5]
 ]
 
+data_cote_ok = [
+    [0,0], [1,1], [2,2], [3,3], [4,4], [5,5], [6,6], [7,7], [8,8], [9,9], [10,10], [11,11]
+]
 
 diff = calculDiffCentre(data)
 diffCoin, diffCote = calculDiffCentreCoinCote(data)
@@ -1269,84 +1411,11 @@ diffCoin, diffCote = calculDiffCentreCoinCote(data)
 #test_rgb_3D(data,68)
 #draw_diffRGB(data)
 #draw_rgb_debut(data)
-#draw2(data_rubiksponce)
-draw2(data_rubiksdamiennoir)
+#draw2(data)
+#draw2(data_rubiksdamiennoir)
 #draw_rgb_debut(data_rubiksdamiennoir)
 #draw2(data_turned)
 #draw2(data_2804_rubiksdamiennoir)
 #draw(data)
 
-"""
-tabDiffEucl = []
-for i in range(0,8):
-    tabDiffEucl.append([])
-min = 256
-indiceI  = -1
-indiceJ = -1
-temp = 255
-for i in range (0,len(data)):
-    print "face : ",i
-    min = 256
-    for j in range (0,len(data[0])):
-        for k in range (0,6):
-            if j!= 4 :
-                temp = compare2Couleur(data[i][j],data[k][4])
-                tabDiffEucl[i].append(temp)
-                if min > temp :
-                    #print"COUCOU"
-                    min = temp
-                    
-                    indiceK = k
-                indiceI = i
-                indiceJ = j
-                
-            #print i , j ,": ", i , k," (i j) " , " i k"
-            #print temp
-        print tabDiffEucl[i]
-        #print "min : ", min ,"cote : ",indiceI,indiceJ , "centre : ", indiceK,4
-    #print "face : ",i
-    
-    print "\n"
-
-"""
-            
-"""
-c1 =[3, 5, 6]
-c2 = [4, 6, 8]
-test = compare2Couleur(c1, c2)
-print test
-"""
-"""
-c1 =[59, 68, 45]
-c2 =[31, 35, 29]
-test = compare2Couleur(c1, c2)
-print test
-
-
-c1 =[38, 43, 47]
-c2 =[31, 35, 29]
-test = compare2Couleur(c1, c2)
-print test
-
-
-16  [34, 39, 31]
-00 [3, 5, 6]
-22 [22, 7, 5]
-
-[52, 60, 62]
-[24, 29, 40]
-[15, 41, 40]
-
-
-[1.67, 14.33, 7.67, 14.33, 4.0, 16.33, 17.67, 16.33]
-[7.33, 6.67, 8.0, 6.67, 3.67, 15.67, 7.0, 15.67]
-[2.0, 14.67, 7.67, 14.67, 3.67, 16.0, 17.33, 16.0]
-[6.33, 7.33, 7.67, 7.33, 4.0, 16.33, 8.33, 16.33]
-[6.33, 7.67, 8.0, 7.67, 6.67, 10.33, 11.67, 10.33]
-[6.67, 7.33, 8.67, 7.33, 6.33, 11.0, 12.33, 11.0]
-[6.0, 11.67, 12.67, 11.67, 1.67, 14.33, 12.67, 14.33]
-[6.67, 10.67, 7.67, 10.67, 2.33, 15.0, 12.0, 15.0]
-
-
-
-"""
+draw3(data)
