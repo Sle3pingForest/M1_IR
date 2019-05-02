@@ -238,7 +238,7 @@ public class Main {
 			donnee.append("\n],");
 		}
 		donnee.append("]");
-		BufferedWriter writer = new BufferedWriter(new FileWriter("data_2804_rubiksdamiennoir.txt"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter("data_0105_rubiksdamienblanc.txt"));
 
 	    writer.write(donnee.toString());
 	     
