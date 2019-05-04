@@ -1,3 +1,5 @@
+import math
+
 def moyenneRGB(c1, c2):
     r1, g1, b1 = diffRGB(c1,c2)
 

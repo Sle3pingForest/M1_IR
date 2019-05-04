@@ -481,8 +481,8 @@ def draw2(data):
             couleurCentre = [ round( tabCoinCheck[ i ][j][0])/max_color, round( tabCoinCheck[ i ][j][1])/max_color , round( tabCoinCheck[ i ][j][2])/max_color  ]
             if j == 0:
                 decalage += 5
-            plt.scatter(i*3+j + decalage, 0, s=800, marker='o', c= couleurTabCoin )
-            plt.scatter(i*3+j + decalage, 5, s=800, marker='o', c= couleurCentreAssocie )
+            plt.scatter(i*1+j + decalage, 0, s=800, marker='o', c= couleurTabCoin )
+            plt.scatter(i*1+j + decalage, 5, s=800, marker='o', c= couleurCentreAssocie )
             #plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurCentre )
     
     #plt.savefig('tri_coin.png')
@@ -898,10 +898,10 @@ def test_hsv_3D():
     rouge = (1,0,0)
     vert = (0,1,0)
     bleu = (0,0,1)
-    rose = ( (253./255.) , (108./255.), (158./255.) )
-    rose_fonce = ( (199./255.) , (21./255.), (133./255.) )
+    #rose = ( (253./255.) , (108./255.), (158./255.) )
+    #rose_fonce = ( (199./255.) , (21./255.), (133./255.) )
     tab = []
-    tab.extend( (rouge,vert,bleu, rose, rose_fonce))
+    tab.extend( (rouge,vert,bleu))#, rose, rose_fonce))
 
 
     Fig = plt.figure()
@@ -909,7 +909,7 @@ def test_hsv_3D():
     for i in range(0,len(tab)):
         
         hsv = colorsys.rgb_to_hsv(tab[i][0], tab[i][1], tab[i][2])
-        print hsv
+        #print hsv
         ax.scatter3D(hsv[0], hsv[1], hsv[2], c=tab[i], cmap=tab[i])
         ax.scatter3D(tab[i][0], tab[i][1], tab[i][2], c=tab[i], cmap=tab[i])
     plt.show()
@@ -1138,12 +1138,12 @@ diff = calculDiffCentre(data)
 diffCoin, diffCote = calculDiffCentreCoinCote(data)
 
 
-#test_hsv_3D()
-#test_hsv(data,68)
-#test_rgb_3D(data,68)
+test_hsv_3D()
+test_hsv(data,68)
+test_rgb_3D(data,68)
 #draw_diffRGB(data)
-draw_rgb_debut(data_rubiksofficiel)
-#draw2(data)
+#draw_rgb_debut(data_rubiksponce)
+#draw2(data_rubiksofficiel)
 #draw2(data_rubiksdamiennoir)
 #draw_rgb_debut(data_rubiksdamiennoir)
 #draw2(data_turned)
