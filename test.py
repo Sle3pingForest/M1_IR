@@ -19,6 +19,8 @@ import numpy as np
 import math
 import colorsys
 from mpl_toolkits import mplot3d
+from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor
+from repartition_tri import repartition, repartition_egal
 
 
 from data.data3 import data3
@@ -479,8 +481,8 @@ def draw2(data):
             couleurCentre = [ round( tabCoinCheck[ i ][j][0])/max_color, round( tabCoinCheck[ i ][j][1])/max_color , round( tabCoinCheck[ i ][j][2])/max_color  ]
             if j == 0:
                 decalage += 5
-            plt.scatter(i*3+j + decalage, 0, s=800, marker='o', c= couleurTabCoin )
-            plt.scatter(i*3+j + decalage, 5, s=800, marker='o', c= couleurCentreAssocie )
+            plt.scatter(i*1+j + decalage, 0, s=800, marker='o', c= couleurTabCoin )
+            plt.scatter(i*1+j + decalage, 5, s=800, marker='o', c= couleurCentreAssocie )
             #plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurCentre )
     
     #plt.savefig('tri_coin.png')
@@ -786,7 +788,7 @@ def draw_rgb_debut(data):
       #print ' COULEUR SIDE ',  c[i], '  liste facet: ', color_center[i], '\n'
       tabColor = []
       for j in range (0 , len(color_center[i])):
-            plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  rgb255to01(color_center[i][j], max_color) )
+            plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  t255to01(color_center[i][j], max_color) )
             plt.scatter(i, 0, s=800, marker='o', c= t255to01(c[i],max_color) )
     """
     plt.scatter(x, y, s=800, marker='s', c=color)
@@ -794,27 +796,21 @@ def draw_rgb_debut(data):
     plt.axis('off')
     plt.savefig('unfolding.png')
     """
+
+    
+    tab_tri = repartition_egal(color_center, c, 9)
+    fig = plt.figure()
+    for i in range(0,len(tab_tri) ):
+        
+      #print ' COULEUR SIDE ',  c[i], '  liste facet: ', color_center[i], '\n'
+      tabColor = []
+      for j in range (0 , len(tab_tri[i])):
+            plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  t255to01(tab_tri[i][j], max_color) )
+            plt.scatter(i, 0, s=800, marker='o', c= t255to01(c[i],max_color) )
+    
     plt.show()    
 
-"""
-a utiliser sur un rubik resolu
-compare les facet avec le centre associe et calcul
-l ecart de couleur du aux problemes mecaniques du robot
-qui capte les facet a une hauteur differente
-"""
-def calculEcartAvecCentre(data):
-    diff = []
-    for i in range(0,6):
-        diff.append([data[i][4]])
-    
-    for s, side in enumerate(data):
-        for f, (r,g,b) in enumerate(side):
-            if f != 4:
-                diffR = abs(diff[side][0][0] - r)
-                diffG = abs(diff[side][0][1] - g)
-                diffB = abs(diff[side][0][2] - b)
-                diff.append([diffR, diffG, diffB])
-    return diff
+
 
 
 
@@ -823,39 +819,7 @@ def calculEcartAvecCentre(data):
 ###########################
 
 
-def distance_hsv(hsv1, hsv2):
-    dist = 0
-    if hsv1[0] > hsv2[0]:
-        dist = ( 1 - hsv1[0] ) + hsv2[0]
-    else:
-        dist = ( 1 - hsv2[0] ) + hsv1[0]
 
-    
-    if dist > abs(hsv1[0] - hsv2[0]):
-        dist = abs(hsv1[0] - hsv2[0])
-        
-    r = math.pow(dist, 2)
-    g = math.pow(hsv1[1] - hsv2[1], 2)
-    b = math.pow(hsv1[2] - hsv2[2], 2)
-
-    dist =  math.sqrt( float(r) +float(g) + float(b) )
-    return dist
-
-
-
-def distance_hue(hsv1, hsv2):
-    dist = 0
-    if hsv1[0] > hsv2[0]:
-        dist = ( 1 - hsv1[0] ) + hsv2[0]
-    else:
-        dist = ( 1 - hsv2[0] ) + hsv1[0]
-
-    
-    if dist > abs(hsv1[0] - hsv2[0]):
-        dist = abs(hsv1[0] - hsv2[0])
-        
-    r = math.pow(dist, 2)
-    return math.sqrt( float(r))
 
 
 
@@ -926,42 +890,18 @@ def test_hsv(data,max_color):
    
     plt.show()    
 
-def sameColor(c1, c2):
-    return c1[0] == c2[0] and c1[1] == c2[1] and c1[2] == c2[2]
-
-# retourne la difference la plus petite et l indice du triplet centre associe
-def choixMeilleurCentre(tabPref):
-    min = 256
-    indice = -1
-    for i in range(0, len(tabPref)):
-        if min > tabPref[i]:
-            min = tabPref[i]
-            indice = i
-    return tabPref[indice], indice
 
 
-
-def diffRGBCoin(tabCoin, tabCoinCheck):
-
-    somme1 = [0,0,0]
-    somme2 = [0,0,0]
-
-    for i in range (0, len(tabCoin)):
-        for j in range(0, len(tabCoin[i])):
-            somme1[j] += tabCoin[i][j]
-            somme2[j] += tabCoinCheck[i][j]
-
-    return round( float(  abs(somme1[0] - somme2[0] ) + abs(somme1[1] - somme2[1] ) + abs(somme1[2] - somme2[2] ) / 3), 2)
 
 def test_hsv_3D():
         
     rouge = (1,0,0)
     vert = (0,1,0)
     bleu = (0,0,1)
-    rose = ( (253./255.) , (108./255.), (158./255.) )
-    rose_fonce = ( (199./255.) , (21./255.), (133./255.) )
+    #rose = ( (253./255.) , (108./255.), (158./255.) )
+    #rose_fonce = ( (199./255.) , (21./255.), (133./255.) )
     tab = []
-    tab.extend( (rouge,vert,bleu, rose, rose_fonce))
+    tab.extend( (rouge,vert,bleu))#, rose, rose_fonce))
 
 
     Fig = plt.figure()
@@ -969,7 +909,7 @@ def test_hsv_3D():
     for i in range(0,len(tab)):
         
         hsv = colorsys.rgb_to_hsv(tab[i][0], tab[i][1], tab[i][2])
-        print hsv
+        #print hsv
         ax.scatter3D(hsv[0], hsv[1], hsv[2], c=tab[i], cmap=tab[i])
         ax.scatter3D(tab[i][0], tab[i][1], tab[i][2], c=tab[i], cmap=tab[i])
     plt.show()
@@ -1109,148 +1049,13 @@ def positionnement(data):
 
     return tab_faces_group
 
-#parcours et choisit pour chaque triplet le centre le plus ressemblant (rgb)
-def repartition(tabPref):
-    
-    fini = False
 
-    #tableau ou sera indique laffectation de chaque triplet avec le centre le plus ressemblant 
-    tabFinal = [-1] * len(tabPref)
-    compt = 0
-
-    # si 0 le centre i na pas ete affecte si 1 le centre a ete affecte
-    tabChoix = [0] * len(tabPref)
-
-    for i in range(0, len(tabPref)):
-        print tabPref[i] 
-    print "\n"
-    
-    while fini == False:
-        tab = []
-        for i in range(0, len(tabPref)):
-            #stocke le coin le plus ressemblant avec sa valeur associe a un centre  i   
-            tab.append([])
-            
-        #tableau qui compte le nombre de triplet qui veulent etre associe au centre i
-        tabCount = [0] * len(tabPref)
-        
-        # parcours les colonnes pour chaque coin des centres
-        for i in range(0, len(tabPref[0])):
-            
-            min = 256
-            indicelig = 0
-            #parcours les lignes pour choisir le plus mieux de lindice i
-            for j in range(0, len(tabPref)):
-            
-                if tabPref[j][i] < min:
-                    min = tabPref[j][i]
-                    indicelig = j
-            tab[indicelig].append( [min, i , indicelig] )
-            tabCount[indicelig] += 1
-
-
-        for i in range(0, len(tabCount)):
-            
-            #si celui que je check,  na pas de coin centre  attribue 
-            if tabFinal[i] == -1:
-                
-                # si il a un seul meilleur coin et que le coin centre n a pas ete attribue
-                if tabCount[i] == 1 and tabChoix[ tab[i][0][1] ] == 0:
-                    
-                    indicecol = tab[i][0][1]
-                    #jenleve la ligne et la colonne du coin que jai check 
-                    #et jattribue dans les tableaux
-                    for j in range(0, len(tabPref[0])):
-                        tabPref[i][j] = 256.
-                    for k in range(0, len(tabPref)):
-                        tabPref[k][indicecol] = 256.
-                    tabFinal[i] = tab[i][0][1]
-                    tabChoix[ tabFinal[i] ] = 1
-                        
-                #si il a plus d un meilleur
-                elif tabCount[i] > 1:
-                    indicecol = 0
-                    min = 256 
-                    indice = 0
-                    #je choisis le plus petit
-                    for k in range(0, len(tab[i])):
-                        if tab[i][k][0] < min:
-                            min = tab[i][k][0]
-                            indicecol = tab[i][k][1]
-                            indice = k
-                            
-                    #et si le coin centre n a pas ete attribue
-                    if tabChoix[ tab[i][indice][1] ] == 0:
-                        #jenleve la ligne et la colonne du coin que jai check 
-                        # et jattribue dans les tableaux
-                        for j in range(0, len(tabPref[0])):
-                            tabPref[i][j] = 256.
-                        for k in range(0, len(tabPref)):
-                            tabPref[k][indicecol] = 256.
-                        tabFinal[i] = tab[i][indice][1]
-                        tabChoix[ tabFinal[i] ] = 1
-
-        
-        for i in range(0, len(tabPref)):
-            print tabPref[i] 
-        print "\n"
-        
-        #si tous les coin ont ete attribue a un coin centre je sors
-        fini = True
-        for i in range(0, len(tabFinal)):
-            if tabFinal[i] == -1:
-                fini = False
-    return tabFinal
-  
 """
 je recupere la plus petite difference pour chaque coin centre
 je compare et recupere le plus petit des 8 differences et son indice
 jassocie le triplet au coin centre et je modifie toutes les valeurs a cet indice a un max
 je refais la meme jusqua avoir tout compare
 """
-
-def moyenneRGB(c1, c2):
-    r1, g1, b1 = diffRGB(c1,c2)
-
-    return round( (r1+g1+b1)/3 , 2)
-
-def rgb255to01(c1,div):
-    c1[0] = round(c1[0])/div
-    c1[1] = round(c1[1])/div
-    c1[2] = round(c1[2])/div
-    return c1
-
-
-def t255to01(c1,div):
-    color = 0
-    color = [ round(c1[0])/div,  round(c1[1])/div,  round(c1[2])/div ] 
-    return  color
-
-def calculDiffColorRGB(c1, c2):
-
-    r1 = c1[0]/ (c1[0]+c1[1]+c1[2])
-    r2 = c2[0]/ (c2[0]+c2[1]+c2[2])
-
-    g1 = c1[1]/ (c1[0]+c1[1]+c1[2])
-    g2 = c2[1]/ (c2[0]+c2[1]+c2[2])
-
-    b1 = c1[2]/ (c1[0]+c1[1]+c1[2])
-    b2 = c2[2]/ (c2[0]+c2[1]+c2[2])
-    return abs(r1-r2), abs(g1-g2),abs(b1-b2)
-
-def diffRGB(c1, c2): 
-    r1 = abs(c1[0] - c2[0])
-
-    g1 = abs(c1[1] - c2[1])
-
-    b1 = abs(c1[2] - c2[2])
-
-    return r1,g1,b1
-
-def compare2Couleur(c1 , c2):
-    r1, g1, b1 = diffRGB(c1,c2)
-
-    return round(math.sqrt(r1*r1+g1*g1+b1*b1) , 2)
 
 
 def calculDiffCentre(data, mode="uniforme"):
@@ -1298,79 +1103,6 @@ def calculDiffCentreCoinCote(data, mode="uniforme"):
         moyenneDiffCote.append(sommeCote)
     return moyenneDiffCoin,  moyenneDiffCote
 
-"""
-def compare_centre_rgb(data,tab):
-
-    centre = []
-    for i in range(0, len(data)):
-        centre.append(data[i][4])
-
-
-    tabPref = []
-    for i in range(0, len(tab)):
-        tabPref.append([])
-        
-    #parcours tout le tableau
-    for i in range(0, len(tab)):
-        #parcours les 6 centres
-        for j in range(0, len(centre)):
-            tabPref[i].append( moyenneRGB(tab[i], centre[j]) )
-
-            
-    return tabPref
-
-
-    
-
-def tri_groupement_de_cases(data,max_color):
-
-    tab = []
-    tab_affectation = []
-    nb_cases = len(data[0])
-    nb_faces = len(data)
-    centre = []
-    for i in range(0,nb_cases):
-        tab.append([])
-        
-        if i < 6:
-            tab_affectation.append([])
-            centre.append(data[i][4])
-        
-    for i in range(0, nb_cases):
-        for j in range(0, nb_faces):
-            tab[i].append(data[j][i])
-
-    #pour chaque groupe de cases lancer la repartition
-    for i in range(0, len(tab)):
-        
-        tabPref = [] #compare_centre_rgb(data, tab[i])
-        for m in range(0, len(tab[i])):
-            tabPref.append([])
-
-        #parcours tout le tableau
-        for j in range(0, len(tab[i])):
-            
-            #parcours les 6 centres
-            for k in range(0, len(centre)):
-                tabPref[j].append( moyenneRGB(tab[i][j], centre[k]) )
-
-        tabChoix = repartition(tabPref)
-
-        #print i , "    ", tabChoix
-        #affecte les cases au centre associe
-        for j in range(0,len(tabChoix)):
-            tab_affectation[ tabChoix[j] ].append( tab[i][j] ) 
-
-    for i in range(0,len(tab_affectation) ):
-        for j in range (0 , len(tab_affectation[i])):
-            plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  t255to01(tab_affectation[i][j], max_color) )
-
-            
-        plt.scatter(i, 0, s=800, marker='o', c=  t255to01(centre[i], max_color) )
-    plt.show()   
-    
-"""
-
   
 data = [
 [[3, 5, 6],[4, 6, 8],[5, 7, 9],[3, 5, 8],[4, 6, 9],[3, 5, 7],[4, 6, 7],[4, 6, 8],[3, 4, 7]],
@@ -1406,16 +1138,16 @@ diff = calculDiffCentre(data)
 diffCoin, diffCote = calculDiffCentreCoinCote(data)
 
 
-#test_hsv_3D()
-#test_hsv(data,68)
-#test_rgb_3D(data,68)
+test_hsv_3D()
+test_hsv(data,68)
+test_rgb_3D(data,68)
 #draw_diffRGB(data)
-#draw_rgb_debut(data)
-#draw2(data)
+#draw_rgb_debut(data_rubiksponce)
+#draw2(data_rubiksofficiel)
 #draw2(data_rubiksdamiennoir)
 #draw_rgb_debut(data_rubiksdamiennoir)
 #draw2(data_turned)
 #draw2(data_2804_rubiksdamiennoir)
 #draw(data)
 
-draw3(data)
+#draw3(data)
