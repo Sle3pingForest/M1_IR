@@ -81,7 +81,10 @@ def diffRGBCoin(tabCoin, tabCoinCheck):
     return round( float(  abs(somme1[0] - somme2[0] ) + abs(somme1[1] - somme2[1] ) + abs(somme1[2] - somme2[2] ) / 3), 2)
 
 def sameColor(c1, c2):
-    return c1[0] == c2[0] and c1[1] == c2[1] and c1[2] == c2[2]
+    check = False
+    if (c1[0] == c2[0]) and (c1[1] == c2[1]) and (c1[2] == c2[2]):
+        check = True
+    return check
 
 
 def distance_hsv(hsv1, hsv2):

@@ -19,7 +19,7 @@ import numpy as np
 import math
 import colorsys
 from mpl_toolkits import mplot3d
-from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2
+from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2,sameColor
 from repartition_tri import repartition, repartition_egal
 
 
@@ -64,11 +64,12 @@ from donnees_des_tests.data_rubiksofficiel import data_rubiksofficiel
 from donnees_des_tests.data_rubiksponce import data_rubiksponce
 from donnees_des_tests.data_rubiksdamiennoir import data_rubiksdamiennoir
 from donnees_des_tests.data_0105_rubiksdamienblanc import data_0105_rubiksdamienblanc
-from donnees_des_tests.R3 import R3, R3_bruit1
+from donnees_des_tests.R3 import R3, R3_bruit1, R3_bruit2, R3_bruit3, R3_bruit4, R3_bruit5
 from donnees_des_tests.R1 import R1
 from donnees_des_tests.R2 import R2
 from donnees_des_tests.R4 import R4
 from donnees_des_tests.R5 import R5
+from donnees_des_tests.R6 import R6
 from donnees_des_tests.data_2804_rubiksdamiennoir import data_2804_rubiksdamiennoir
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
@@ -824,7 +825,7 @@ def draw_rgb_debut(data):
 
 
 #comparaison des couleurs hsv avec chaque centre et sa distance vectoriel 
-def test_hsv(data):
+def test_hsv(data, data2 = []):
 
     x, y, color, c, max_color = donnees(data)
 
@@ -858,11 +859,12 @@ def test_hsv(data):
     """
     #test sur toutes les facets
     
-    data_hsv ,color_center = [], []
+    data_hsv ,color_center, tab_rgb = [], [], []
     for i in range(0, len(data)):
         data_hsv.append([])
         color_center.append([])
         tab_hsv.append([])
+        tab_rgb.append([])
 
     """
     Fig = plt.figure()
@@ -875,7 +877,6 @@ def test_hsv(data):
             indice = 0
             for i in range(0, len(centre_hsv)):
                 dist = distance_hsv(data_hsv[s][f], centre_hsv[i])
-                print data_hsv[s][f][0], "   ", centre_hsv[i][0]
                 if dist < min_distance:
                     min_distance = dist
                     indice = i
@@ -885,8 +886,9 @@ def test_hsv(data):
     """
             ax.scatter3D(data_hsv[s][f][0], data_hsv[s][f][1], data_hsv[s][f][2], c=t255to01(data[s][f],max_color), cmap=data)
     """
-
-    
+    if len(data2) > 0:
+        taux_erreur(data2, color_center)
+        
     fig = plt.figure()
     for i in range(0,len(color_center) ):
 
@@ -894,9 +896,14 @@ def test_hsv(data):
             plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  rgb255to01(color_center[i][j], max_color) )
             plt.scatter(i, 0, s=800, marker='o', c= t255to01(centre[i],max_color) )
 
-
+            
             
     tab_repar = repartition_egal(tab_hsv, centre_hsv, 9, False)
+    
+  
+
+
+    
     fig = plt.figure()
     for i in range(0,len(tab_repar) ):
 
@@ -904,7 +911,18 @@ def test_hsv(data):
           color = colorsys.hsv_to_rgb( tab_repar[i][j][0], tab_repar[i][j][1], tab_repar[i][j][2])
           plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  color)
           plt.scatter(i, 0, s=800, marker='o', c= t255to01(centre[i],max_color) )
-   
+
+
+
+    for i in range(0, len(tab_repar)):
+        for j in range(0, len(tab_repar[i])):
+            color = colorsys.hsv_to_rgb( tab_repar[i][j][0], tab_repar[i][j][1], tab_repar[i][j][2])
+            tab_rgb[i].append( [int( color[0]*max_color+0.5), int( color[1]*max_color+0.5), int( color[2]*max_color+0.5)] )
+
+    if len(data2) > 0:
+        taux_erreur(data2, tab_rgb)
+        for i in range(0 , len(tab_rgb)):
+            print tab_rgb[i]
     plt.show()    
 
 
@@ -1120,6 +1138,24 @@ def calculDiffCentreCoinCote(data, mode="uniforme"):
         moyenneDiffCote.append(sommeCote)
     return moyenneDiffCoin,  moyenneDiffCote
 
+
+"""
+calcule le nombre de mauvaise association et le retourne 
+data : donnees non melange
+data_to_check : donnees qui sont a tester
+"""
+def taux_erreur(data, data_to_check):
+    nb_erreur = 0
+    for s, side in enumerate(data):
+        for f, (r,g,b) in enumerate(side):
+            check = False
+            for k in range(0, len(data_to_check[s])):
+                if sameColor(side[f],  data_to_check[s][k]):
+                    check = True
+            if check == False:
+                nb_erreur += 1
+    print nb_erreur
+    return nb_erreur
   
 data = [
 [[3, 5, 6],[4, 6, 8],[5, 7, 9],[3, 5, 8],[4, 6, 9],[3, 5, 7],[4, 6, 7],[4, 6, 8],[3, 4, 7]],
@@ -1129,6 +1165,7 @@ data = [
 [[24, 36, 41],[33, 44, 49],[24, 34, 38],[29, 43, 44],[43, 61, 59],[28, 42, 44],[25, 38, 42],[33, 46, 48],[24, 35, 41]],
 [[9, 24, 29],[11, 31, 34],[8, 23, 27],[13, 32, 34],[15, 41, 40],[12, 31, 33],[11, 27, 31],[13, 34, 34],[10, 26, 30]]
 ]
+
 
 data_turned = [
 [[4, 4, 8],[4, 5, 8],[4, 6, 8],[3, 5, 7],[5, 7, 9],[3, 6, 7],[3, 5, 8],[4, 5, 7],[4, 5, 8]],
@@ -1160,7 +1197,7 @@ diffCoin, diffCote = calculDiffCentreCoinCote(data)
 #test_hsv(data_rubiksofficiel)
 #test_rgb_3D(data,68)
 #draw_rgb_debut(R2)
-showData([R3, R3_bruit1], True)
+#showData([data_rubiksponce], True)
 #draw2(data_rubiksdamiennoir)
 #draw_rgb_debut(data_rubiksdamiennoir)
 #draw2(data_turned)
@@ -1175,7 +1212,7 @@ showData([R3, R3_bruit1], True)
 test rgb
 """
 
-draw_rgb_debut(R3_bruit1)
+draw_rgb_debut(R3_bruit5)
 
 
 
@@ -1213,10 +1250,10 @@ draw2(R1)
 test hsv
 
 
-test_hsv(data)
+test_hsv(R3)
+test_hsv(R6, data)
 test_hsv(R1)
 test_hsv(R2)
-test_hsv(R3)
 test_hsv(R4)
 
 
