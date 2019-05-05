@@ -38,6 +38,16 @@ def diffRGB(c1, c2):
 
     return r1,g1,b1
 
+#valeur peuvent etre negatives
+def diffRGB_2(c1, c2): 
+    r1 = c1[0] - c2[0]
+
+    g1 = c1[1] - c2[1]
+
+    b1 = c1[2] - c2[2]
+
+    return r1,g1,b1
+
 def compare2Couleur(c1 , c2):
     r1, g1, b1 = diffRGB(c1,c2)
 

@@ -19,7 +19,7 @@ import numpy as np
 import math
 import colorsys
 from mpl_toolkits import mplot3d
-from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor
+from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2
 from repartition_tri import repartition, repartition_egal
 
 
@@ -64,6 +64,11 @@ from donnees_des_tests.data_rubiksofficiel import data_rubiksofficiel
 from donnees_des_tests.data_rubiksponce import data_rubiksponce
 from donnees_des_tests.data_rubiksdamiennoir import data_rubiksdamiennoir
 from donnees_des_tests.data_0105_rubiksdamienblanc import data_0105_rubiksdamienblanc
+from donnees_des_tests.R3 import R3, R3_bruit1
+from donnees_des_tests.R1 import R1
+from donnees_des_tests.R2 import R2
+from donnees_des_tests.R4 import R4
+from donnees_des_tests.R5 import R5
 from donnees_des_tests.data_2804_rubiksdamiennoir import data_2804_rubiksdamiennoir
 # given a side index and a facet index, return x,y coordinates of the corresponding unfolding
 def coord2(s,f):
@@ -100,7 +105,7 @@ def couleurCoin(data):
         for j in range(0, len(data[i][4])):
             #print data[i][j]
             #print diffCoin[i]
-            color[j] = data[i][4][j] - diffCoin[i][j]
+            color[j] = data[i][4][j] + diffCoin[i][j]
         tab_nuance.append( color )
 
 
@@ -247,8 +252,8 @@ def draw_diffRGB(data):
                     #calcul la nouvelle nuance de chaque centre
                     color = [0,0,0]
                     for l in range(0,3):
-                        color[l] = c[i][l] - diff[i][l]
-              
+                        color[l] = c[i][l] + diff[i][l]
+                        
 	            rr = abs(r - color[0])
 	            gg = abs(g - color[1])
 	            bb = abs(b - color[2])
@@ -295,9 +300,10 @@ def draw_diffRGB(data):
                     color = [0,0,0]
                     for l in range(0,3):
                         if f%2 == 0:
-                            color[l] = c[i][l] - diffCoin[i][l]
+                            color[l] = c[i][l] + diffCoin[i][l]
                         else:
-                            color[l] = c[i][l] - diffCote[i][l]
+                            color[l] = c[i][l] + diffCote[i][l]
+
 	            rr = abs(r - color[0])
 	            gg = abs(g - color[1])
 	            bb = abs(b - color[2])
@@ -309,10 +315,10 @@ def draw_diffRGB(data):
 
     nb_erreur = 0
     for i in range(0, len(color_center)):
+        print color_center[i]
         if ( len(color_center[i]) > 8):
             nb_erreur +=  len(color_center[i]) - 8
     print float(nb_erreur)/48 *100 , "% d erreur  " ,   nb_erreur , "   sur 48"
-          
     #coeff couleur uniforme
     plt.figure(1)
     for i in range(0, len(c)):
@@ -444,7 +450,7 @@ def draw2(data):
         for j in range(0,len(tabCoinCheck)): #parcours tous les triplets de couleurs des centre a comparer
             #print tabCoin[i], "    " , tabCoinCheck[j]
             #t, tt, indice = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[j])
-            t = diffRGBCoin( tabCoin[i], tabCoinCheck[j] )
+            t = diffRGBCoin( tabCoin[i], tabCoinCheckDiff[j] )
             tabPref[i].append(t)
     """
     for i in range(0, len(tabPref)):
@@ -529,7 +535,7 @@ def draw2(data):
 
 
     datas = [data_0105_rubiksdamienblanc, data_2804_rubiksdamiennoir,data_rubiksponce,data_rubiksdamiennoir,data_2804_prof_pres]#data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
-    showData(datas,True)
+    #showData(datas,True)
 
     # CA OUVRE 2 FENETRE YOUPI
 
@@ -634,7 +640,7 @@ def draw3(data):
 
 
     datas = [data_0105_rubiksdamienblanc, data_2804_rubiksdamiennoir,data_rubiksponce,data_rubiksdamiennoir,data_2804_prof_pres]#data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
-    showData(datas,True)
+    #showData(datas,True)
 
     # CA OUVRE 2 FENETRE YOUPI
 
@@ -796,7 +802,7 @@ def draw_rgb_debut(data):
     plt.axis('off')
     plt.savefig('unfolding.png')
     """
-
+    #showData([R1])
     
     tab_tri = repartition_egal(color_center, c, 9)
     fig = plt.figure()
@@ -810,12 +816,6 @@ def draw_rgb_debut(data):
     
     plt.show()    
 
-
-
-
-
-
-
 ###########################
 
 
@@ -824,13 +824,15 @@ def draw_rgb_debut(data):
 
 
 #comparaison des couleurs hsv avec chaque centre et sa distance vectoriel 
-def test_hsv(data,max_color):
+def test_hsv(data):
+
+    x, y, color, c, max_color = donnees(data)
 
     centre = couleurCentre(data)
     centre_hsv = []
     tab_hsv = []
     tab_rgb, data_rgb = [], []
-
+    """
     #conversion face i en hsv
     for i in range(0, len(data[1])):
         color = t255to01(data[1][i],max_color)
@@ -838,13 +840,13 @@ def test_hsv(data,max_color):
         #print "  couleur des donnees :  " , data[1][4] , "      couleur en format 0-1 : ", color
         tab_hsv.append( colorsys.rgb_to_hsv(color[0], color[1], color[2]) )
         #tab_rgb.append( colorsys.hsv_to_rgb( tab_hsv[i][0], tab_hsv[i][1], tab_hsv[i][2]) )
-
+    """
     #conversion centre rgb to hsv
     for i in range(0, len(centre)):
         color = t255to01(centre[i],max_color)
         #print "  couleur des donnees :  " , data[1][4] , "      couleur en format 0-1 : ", color
         centre_hsv.append( colorsys.rgb_to_hsv(color[0], color[1], color[2]) )
-
+    """
     for j in range(0, len(centre)):
         #calcul distance
         for i in range(0, len(tab_hsv)):
@@ -853,17 +855,19 @@ def test_hsv(data,max_color):
             print "distance facet ",i," avec centre de ", j," : ", distance_hsv(tab_hsv[i], centre_hsv[j] )
             
         print "\n\n"
-
+    """
     #test sur toutes les facets
     
     data_hsv ,color_center = [], []
     for i in range(0, len(data)):
         data_hsv.append([])
         color_center.append([])
+        tab_hsv.append([])
 
-     
+    """
     Fig = plt.figure()
-    ax = plt.axes(projection='3d')   
+    ax = plt.axes(projection='3d') 
+    """  
     for s, side in enumerate(data):
         for f, (r,g,b) in enumerate(side):
             data_hsv[s].append( colorsys.rgb_to_hsv( float(r)/max_color, float(g)/max_color, float(b)/max_color) )
@@ -876,17 +880,30 @@ def test_hsv(data,max_color):
                     min_distance = dist
                     indice = i
 	    color_center[indice].append( [r,g,b] )
+            tab_hsv[indice].append( data_hsv[s][f] )
 
-     
+    """
             ax.scatter3D(data_hsv[s][f][0], data_hsv[s][f][1], data_hsv[s][f][2], c=t255to01(data[s][f],max_color), cmap=data)
+    """
+
     
     fig = plt.figure()
     for i in range(0,len(color_center) ):
 
-      tabColor = []
       for j in range (0 , len(color_center[i])):
             plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  rgb255to01(color_center[i][j], max_color) )
             plt.scatter(i, 0, s=800, marker='o', c= t255to01(centre[i],max_color) )
+
+
+            
+    tab_repar = repartition_egal(tab_hsv, centre_hsv, 9, False)
+    fig = plt.figure()
+    for i in range(0,len(tab_repar) ):
+
+      for j in range (0 , len(tab_repar[i])):
+          color = colorsys.hsv_to_rgb( tab_repar[i][j][0], tab_repar[i][j][1], tab_repar[i][j][2])
+          plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  color)
+          plt.scatter(i, 0, s=800, marker='o', c= t255to01(centre[i],max_color) )
    
     plt.show()    
 
@@ -914,9 +931,9 @@ def test_hsv_3D():
         ax.scatter3D(tab[i][0], tab[i][1], tab[i][2], c=tab[i], cmap=tab[i])
     plt.show()
 
-def test_rgb_3D(data,max_color):
+def test_rgb_3D(data):
         
-
+    x, y, color, c, max_color = donnees(data)
     Fig = plt.figure()
     ax = plt.axes(projection='3d')   
     for s, side in enumerate(data):
@@ -1067,7 +1084,7 @@ def calculDiffCentre(data, mode="uniforme"):
         for f, (r,g,b) in enumerate(side):
             if f != 4:
                 c1 = [r,g,b]
-                colordiff = diffRGB(c1, tab[s])
+                colordiff = diffRGB_2(c1, tab[s])
                 for i in range(0,3):
                     somme[i] += colordiff[i]
         #calcul moyenne diff
@@ -1086,7 +1103,7 @@ def calculDiffCentreCoinCote(data, mode="uniforme"):
         for f, (r,g,b) in enumerate(side):
             if f != 4:
                 c1 = [r,g,b]
-                colordiff = diffRGB(c1, tab[s])
+                colordiff = diffRGB_2(c1, tab[s])
                 for i in range(0,3):
                     if f%2 == 0:
                         sommeCoin[i] += colordiff[i]
@@ -1134,16 +1151,16 @@ data_cote_ok = [
     [0,0], [1,1], [2,2], [3,3], [4,4], [5,5], [6,6], [7,7], [8,8], [9,9], [10,10], [11,11]
 ]
 
+
 diff = calculDiffCentre(data)
 diffCoin, diffCote = calculDiffCentreCoinCote(data)
 
 
-test_hsv_3D()
-test_hsv(data,68)
-test_rgb_3D(data,68)
-#draw_diffRGB(data)
-#draw_rgb_debut(data_rubiksponce)
-#draw2(data_rubiksofficiel)
+#test_hsv_3D()
+#test_hsv(data_rubiksofficiel)
+#test_rgb_3D(data,68)
+#draw_rgb_debut(R2)
+showData([R3, R3_bruit1], True)
 #draw2(data_rubiksdamiennoir)
 #draw_rgb_debut(data_rubiksdamiennoir)
 #draw2(data_turned)
@@ -1151,3 +1168,56 @@ test_rgb_3D(data,68)
 #draw(data)
 
 #draw3(data)
+
+
+
+"""
+test rgb
+"""
+
+draw_rgb_debut(R3_bruit1)
+
+
+
+
+""" 
+
+test draw diff rgb: 
+
+
+diff2 = calculDiffCentre(data_rubiksponce)
+diff = [diff2[0], diff2[2], diff2[3], diff2[4], diff2[1], diff2[5]]
+diffCoin2, diffCote2 = calculDiffCentreCoinCote(data_rubiksponce)
+diffCoin = [diffCoin2[0], diffCoin2[2], diffCoin2[3], diffCoin2[4], diffCoin2[1], diffCoin2[5]]
+diffCote = [diffCote2[0], diffCote2[2], diffCote2[3], diffCote2[4], diffCote2[1], diffCote2[5]]
+draw_diffRGB(R1)
+"""
+
+""" 
+test coin 
+
+
+diffCoin, diffCote = calculDiffCentreCoinCote(R3)
+draw2(R3)
+diffCoin, diffCote = calculDiffCentreCoinCote(data)
+draw2(data)
+
+diff = calculDiffCentre(data)
+diffCoin, diffCote = calculDiffCentreCoinCote(data_rubiksponce)
+draw2(R1)
+"""
+
+
+"""
+
+test hsv
+
+
+test_hsv(data)
+test_hsv(R1)
+test_hsv(R2)
+test_hsv(R3)
+test_hsv(R4)
+
+
+"""

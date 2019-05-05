@@ -7,8 +7,9 @@ l'on garde les centres ou non
 """
 
 import calcul
+import colorsys
 
-def repartition_egal(tab_color,tab_centre, nb):
+def repartition_egal(tab_color,tab_centre, nb, rgb=True):
     #nb : nombre de cases pour chaque faces
     #tab_data : tableau 2d de triplet de couleur (r,g,b) 
     m = 0
@@ -17,6 +18,7 @@ def repartition_egal(tab_color,tab_centre, nb):
         check = True
         tab_indice_depassement = []
         tab_indice_manque = []
+        max_color = 0
         for i in range(0, len(tab_color)):
             if len(tab_color[i]) > nb:
                 #indice des faces qui ont trop de cases associes
@@ -38,7 +40,7 @@ def repartition_egal(tab_color,tab_centre, nb):
             #commence le tri
             for i in range(0, len(tab_copy)):
                 #tri ascendant sur la distance rgb
-                t = tri_fusion(tab_copy[i], tab_centre[  tab_indice_depassement[i] ] )
+                t = tri_fusion(tab_copy[i], tab_centre[  tab_indice_depassement[i] ], rgb)
                 tab_color[ tab_indice_depassement[i] ] = t[0:nb]
 
                 #cases en trop a repartir
@@ -49,7 +51,10 @@ def repartition_egal(tab_color,tab_centre, nb):
                 min = 256
                 indice = 0
                 for j in range(0, len(tab_indice_manque)):
-                    moy = calcul.moyenneRGB(reste[i], tab_centre[ tab_indice_manque[j] ] )
+                    if rgb == True:
+                        moy = calcul.moyenneRGB(reste[i], tab_centre[ tab_indice_manque[j] ] )
+                    else:
+                        moy = calcul.distance_hsv(reste[i], tab_centre[ tab_indice_manque[j] ] )
                     if moy < min:
                         min = moy
                         indice = tab_indice_manque[j]
@@ -58,14 +63,24 @@ def repartition_egal(tab_color,tab_centre, nb):
 
 
 
-def fusion(t1, t2, centre):
+def fusion(t1, t2, centre, rgb=True):
     t = []
     size1 = len(t1)
     size2 = len(t2)
     i = 0
     j = 0
+
     while i < size1 and j < size2:
-        if calcul.moyenneRGB(centre,t1[i]) < calcul.moyenneRGB(centre,t2[j]) :
+        v1 = 0
+        v2 = 0
+        if rgb == True:
+            v1 = calcul.moyenneRGB(centre,t1[i])
+            v2 = calcul.moyenneRGB(centre,t2[j])
+        else:
+             
+            v1 = calcul.distance_hsv(centre,t1[i] )
+            v2 = calcul.distance_hsv(centre,t2[i] )
+        if v1 < v2 :
             t.append(t1[i])
             i += 1
         else:
@@ -78,12 +93,12 @@ def fusion(t1, t2, centre):
     return t
 
 
-def tri_fusion(tab, centre):
+def tri_fusion(tab, centre, rgb = True):
     if len(tab) <= 1:
         return tab
     else:
         size = len(tab)
-        return fusion( tri_fusion(tab[0:size/2], centre), tri_fusion(tab[size/2:], centre), centre)
+        return fusion( tri_fusion(tab[0:size/2], centre), tri_fusion(tab[size/2:], centre), centre, rgb)
 
 
 
