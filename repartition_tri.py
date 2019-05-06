@@ -51,10 +51,16 @@ def repartition_egal(tab_color,tab_centre, nb, rgb=True):
                 min = 256
                 indice = 0
                 for j in range(0, len(tab_indice_manque)):
+                    moy = 0
                     if rgb == True:
                         moy = calcul.moyenneRGB(reste[i], tab_centre[ tab_indice_manque[j] ] )
                     else:
                         moy = calcul.distance_hsv(reste[i], tab_centre[ tab_indice_manque[j] ] )
+                    """
+                    elif rgb == 'LAB':
+                        moy = ecart_delta_E(reste[i], tab_centre[ tab_indice_manque[j] ])
+                    """
+                    print moy
                     if moy < min:
                         min = moy
                         indice = tab_indice_manque[j]
@@ -77,9 +83,9 @@ def fusion(t1, t2, centre, rgb=True):
             v1 = calcul.moyenneRGB(centre,t1[i])
             v2 = calcul.moyenneRGB(centre,t2[j])
         else:
-             
             v1 = calcul.distance_hsv(centre,t1[i] )
             v2 = calcul.distance_hsv(centre,t2[i] )
+        
         if v1 < v2 :
             t.append(t1[i])
             i += 1

@@ -141,3 +141,11 @@ def calculEcartAvecCentre(data):
                 diffB = abs(diff[side][0][2] - b)
                 diff.append([diffR, diffG, diffB])
     return diff
+
+
+def ecart_delta_E(cVar,cRef):
+    delta_b_p2=(cVar[0] - cRef[0])**2
+    delta_a_p2=(cVar[1] - cRef[1])**2
+    delta_L_p2=(cVar[2] - cRef[2])**2
+    delta_E = (delta_b_p2+delta_a_p2+delta_L_p2)**1/2
+    return delta_E

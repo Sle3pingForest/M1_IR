@@ -64,7 +64,7 @@ from donnees_des_tests.data_rubiksofficiel import data_rubiksofficiel
 from donnees_des_tests.data_rubiksponce import data_rubiksponce
 from donnees_des_tests.data_rubiksdamiennoir import data_rubiksdamiennoir
 from donnees_des_tests.data_0105_rubiksdamienblanc import data_0105_rubiksdamienblanc
-from donnees_des_tests.R3 import R3, R3_bruit1, R3_bruit2, R3_bruit3, R3_bruit4, R3_bruit5
+from donnees_des_tests.R3 import R3, R3_bruit1, R3_bruit2, R3_bruit3, R3_bruit4, R3_bruit5, R3_bruitGris1, R3_bruitGris2
 from donnees_des_tests.R1 import R1
 from donnees_des_tests.R2 import R2
 from donnees_des_tests.R4 import R4
@@ -1197,7 +1197,6 @@ diffCoin, diffCote = calculDiffCentreCoinCote(data)
 #test_hsv(data_rubiksofficiel)
 #test_rgb_3D(data,68)
 #draw_rgb_debut(R2)
-#showData([data_rubiksponce], True)
 #draw2(data_rubiksdamiennoir)
 #draw_rgb_debut(data_rubiksdamiennoir)
 #draw2(data_turned)
@@ -1212,7 +1211,9 @@ diffCoin, diffCote = calculDiffCentreCoinCote(data)
 test rgb
 """
 
-draw_rgb_debut(R3_bruit5)
+
+showData([R3_bruitGris2], True)
+draw_rgb_debut(R3_bruitGris2)
 
 
 
