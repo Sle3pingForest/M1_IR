@@ -9,7 +9,7 @@ l'on garde les centres ou non
 import calcul
 import colorsys
 
-def repartition_egal(tab_color,tab_centre, nb, rgb=True):
+def repartition_egal(tab_color,tab_centre, nb, rgb):
     #nb : nombre de cases pour chaque faces
     #tab_data : tableau 2d de triplet de couleur (r,g,b) 
     m = 0
@@ -36,31 +36,37 @@ def repartition_egal(tab_color,tab_centre, nb, rgb=True):
             for i in range(0, len(tab_indice_depassement)):
                 tab_copy.append([])
                 tab_copy[i] = tab_color[ tab_indice_depassement[i] ]
-                
+                #print tab_indice_depassement[i]
             #commence le tri
             for i in range(0, len(tab_copy)):
                 #tri ascendant sur la distance rgb
                 t = tri_fusion(tab_copy[i], tab_centre[  tab_indice_depassement[i] ], rgb)
+                #print i
                 tab_color[ tab_indice_depassement[i] ] = t[0:nb]
-
                 #cases en trop a repartir
                 reste.extend(t[nb:])
-            #print reste
+
+                
+         
             #repartir le reste
             for i in range(0, len(reste)):
-                min = 256
+                min = 300000 
                 indice = 0
                 for j in range(0, len(tab_indice_manque)):
                     moy = 0
+                    """
                     if rgb == True:
                         moy = calcul.moyenneRGB(reste[i], tab_centre[ tab_indice_manque[j] ] )
                     else:
                         moy = calcul.distance_hsv(reste[i], tab_centre[ tab_indice_manque[j] ] )
                     """
+                    if rgb == 'RGB':
+                        moy = calcul.moyenneRGB(reste[i], tab_centre[ tab_indice_manque[j] ] )
+                    elif rgb == 'HSV':
+                        moy = calcul.distance_hsv(reste[i], tab_centre[ tab_indice_manque[j] ] )
                     elif rgb == 'LAB':
-                        moy = ecart_delta_E(reste[i], tab_centre[ tab_indice_manque[j] ])
-                    """
-                    print moy
+                        moy = calcul.ecart_delta_E(reste[i], tab_centre[ tab_indice_manque[j] ])
+            
                     if moy < min:
                         min = moy
                         indice = tab_indice_manque[j]
@@ -69,7 +75,7 @@ def repartition_egal(tab_color,tab_centre, nb, rgb=True):
 
 
 
-def fusion(t1, t2, centre, rgb=True):
+def fusion(t1, t2, centre, rgb):
     t = []
     size1 = len(t1)
     size2 = len(t2)
@@ -79,12 +85,23 @@ def fusion(t1, t2, centre, rgb=True):
     while i < size1 and j < size2:
         v1 = 0
         v2 = 0
+        """
         if rgb == True:
             v1 = calcul.moyenneRGB(centre,t1[i])
             v2 = calcul.moyenneRGB(centre,t2[j])
         else:
             v1 = calcul.distance_hsv(centre,t1[i] )
             v2 = calcul.distance_hsv(centre,t2[i] )
+        """
+        if rgb == 'RGB':
+            v1 = calcul.moyenneRGB(centre,t1[i])
+            v2 = calcul.moyenneRGB(centre,t2[j])
+        elif rgb == 'HSV':
+            v1 = calcul.distance_hsv(centre,t1[i] )
+            v2 = calcul.distance_hsv(centre,t2[i] )
+        elif rgb == 'LAB':
+            v1 = calcul.ecart_delta_E(centre,t1[i])
+            v2 = calcul.ecart_delta_E(centre,t2[i])
         
         if v1 < v2 :
             t.append(t1[i])
@@ -99,12 +116,12 @@ def fusion(t1, t2, centre, rgb=True):
     return t
 
 
-def tri_fusion(tab, centre, rgb = True):
+def tri_fusion(tab, centre, rgb):
     if len(tab) <= 1:
         return tab
     else:
         size = len(tab)
-        return fusion( tri_fusion(tab[0:size/2], centre), tri_fusion(tab[size/2:], centre), centre, rgb)
+        return fusion( tri_fusion(tab[0:size/2], centre, rgb), tri_fusion(tab[size/2:], centre, rgb), centre, rgb)
 
 
 

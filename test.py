@@ -805,7 +805,7 @@ def draw_rgb_debut(data):
     """
     #showData([R1])
     
-    tab_tri = repartition_egal(color_center, c, 9)
+    tab_tri = repartition_egal(color_center, c, 9, 'RGB')
     fig = plt.figure()
     for i in range(0,len(tab_tri) ):
         
@@ -898,7 +898,7 @@ def test_hsv(data, data2 = []):
 
             
             
-    tab_repar = repartition_egal(tab_hsv, centre_hsv, 9, False)
+    tab_repar = repartition_egal(tab_hsv, centre_hsv, 9, 'HSV')
     
   
 
