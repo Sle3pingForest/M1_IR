@@ -14,6 +14,8 @@ def repartition_egal(tab_color,tab_centre, nb, rgb):
     #tab_data : tableau 2d de triplet de couleur (r,g,b) 
     m = 0
     check = False
+    compt= 0
+    tab_test = []
     while check == False:
         check = True
         tab_indice_depassement = []
@@ -41,16 +43,18 @@ def repartition_egal(tab_color,tab_centre, nb, rgb):
             for i in range(0, len(tab_copy)):
                 #tri ascendant sur la distance rgb
                 t = tri_fusion(tab_copy[i], tab_centre[  tab_indice_depassement[i] ], rgb)
+                if i == 1:
+                    print t
                 #print i
                 tab_color[ tab_indice_depassement[i] ] = t[0:nb]
                 #cases en trop a repartir
                 reste.extend(t[nb:])
-
                 
-         
+            print "reste", reste
             #repartir le reste
             for i in range(0, len(reste)):
-                min = 300000 
+                min = 300000
+                print len(reste)
                 indice = 0
                 for j in range(0, len(tab_indice_manque)):
                     moy = 0
@@ -66,11 +70,18 @@ def repartition_egal(tab_color,tab_centre, nb, rgb):
                         moy = calcul.distance_hsv(reste[i], tab_centre[ tab_indice_manque[j] ] )
                     elif rgb == 'LAB':
                         moy = calcul.ecart_delta_E(reste[i], tab_centre[ tab_indice_manque[j] ])
+                        tab_test.append([reste[i], moy, tab_indice_manque[j]])
             
                     if moy < min:
                         min = moy
                         indice = tab_indice_manque[j]
+                        
                 tab_color[ indice ].append(reste[i])
+                
+            if compt ==0:
+                for i in range (0,len(tab_test)):
+                    print tab_test[i]
+            compt += 1
     return tab_color
 
 
@@ -153,7 +164,7 @@ def repartition(tabPref):
         # parcours les colonnes pour chaque coin des centres
         for i in range(0, len(tabPref[0])):
             
-            min = 256
+            min = 256000
             indicelig = 0
             #parcours les lignes pour choisir le plus mieux de lindice i
             for j in range(0, len(tabPref)):
@@ -177,16 +188,16 @@ def repartition(tabPref):
                     #jenleve la ligne et la colonne du coin que jai check 
                     #et jattribue dans les tableaux
                     for j in range(0, len(tabPref[0])):
-                        tabPref[i][j] = 256.
+                        tabPref[i][j] = 256000.
                     for k in range(0, len(tabPref)):
-                        tabPref[k][indicecol] = 256.
+                        tabPref[k][indicecol] = 256000.
                     tabFinal[i] = tab[i][0][1]
                     tabChoix[ tabFinal[i] ] = 1
                         
                 #si il a plus d un meilleur
                 elif tabCount[i] > 1:
                     indicecol = 0
-                    min = 256 
+                    min = 256000
                     indice = 0
                     #je choisis le plus petit
                     for k in range(0, len(tab[i])):
@@ -200,9 +211,9 @@ def repartition(tabPref):
                         #jenleve la ligne et la colonne du coin que jai check 
                         # et jattribue dans les tableaux
                         for j in range(0, len(tabPref[0])):
-                            tabPref[i][j] = 256.
+                            tabPref[i][j] = 256000.
                         for k in range(0, len(tabPref)):
-                            tabPref[k][indicecol] = 256.
+                            tabPref[k][indicecol] = 256000.
                         tabFinal[i] = tab[i][indice][1]
                         tabChoix[ tabFinal[i] ] = 1
 

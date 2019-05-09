@@ -19,7 +19,7 @@ import numpy as np
 import math
 import colorsys
 from mpl_toolkits import mplot3d
-from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2,sameColor
+from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2,sameColor, ecart_delta_E, diffLABCoin
 from repartition_tri import repartition, repartition_egal
 
 
@@ -451,7 +451,8 @@ def draw2(data):
         for j in range(0,len(tabCoinCheck)): #parcours tous les triplets de couleurs des centre a comparer
             #print tabCoin[i], "    " , tabCoinCheck[j]
             #t, tt, indice = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[j])
-            t = diffRGBCoin( tabCoin[i], tabCoinCheckDiff[j] )
+            #t = diffRGBCoin( tabCoin[i], tabCoinCheck[j] )
+            t = diffLABCoin( tabCoin[i], tabCoinCheck[j] )
             tabPref[i].append(t)
     """
     for i in range(0, len(tabPref)):
@@ -1212,8 +1213,8 @@ test rgb
 """
 
 
-showData([R3_bruitGris2], True)
-draw_rgb_debut(R3_bruitGris2)
+#showData([R3_bruitGris2], True)
+#draw_rgb_debut(R3_bruitGris2)
 
 
 
@@ -1244,7 +1245,7 @@ diff = calculDiffCentre(data)
 diffCoin, diffCote = calculDiffCentreCoinCote(data_rubiksponce)
 draw2(R1)
 """
-
+draw2(R3)
 
 """
 
