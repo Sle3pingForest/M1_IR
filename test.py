@@ -19,7 +19,7 @@ import numpy as np
 import math
 import colorsys
 from mpl_toolkits import mplot3d
-from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2, ecart_delta_E, diffLABCoin,sameColor,distance
+from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2,sameColor,distance
 from repartition_tri import repartition, repartition_egal
 
 
@@ -459,8 +459,7 @@ def draw2(data):
         for j in range(0,len(tabCoinCheck)): #parcours tous les triplets de couleurs des centre a comparer
             #print tabCoin[i], "    " , tabCoinCheck[j]
             #t, tt, indice = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[j])
-            #t = diffRGBCoin( tabCoin[i], tabCoinCheck[j] )
-            t = diffLABCoin( tabCoin[i], tabCoinCheck[j] )
+            t = diffRGBCoin( tabCoin[i], tabCoinCheckDiff[j] )
             tabPref[i].append(t)
     """
     for i in range(0, len(tabPref)):
@@ -814,7 +813,7 @@ def draw_rgb_debut(data):
     """
     #showData([R1])
     
-    tab_tri = repartition_egal(color_center, c, 9, 'RGB')
+    tab_tri = repartition_egal(color_center, c, 9)
     fig = plt.figure()
     for i in range(0,len(tab_tri) ):
         
@@ -907,7 +906,7 @@ def test_hsv(data, data2 = []):
 
             
             
-    tab_repar = repartition_egal(tab_hsv, centre_hsv, 9, 'HSV')
+    tab_repar = repartition_egal(tab_hsv, centre_hsv, 9, False)
     
   
 
@@ -1086,7 +1085,7 @@ def showAffectation(color_center, centre):
         if i < 6:
             plt.scatter(i, 0, s=800, marker='o', c= t255to01(centre[i],max_color) )
         for j in range (0 , len(color_center[i])):
-            plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  rgb255to01(color_center[i][j], max_color) )
+            plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  t255to01(color_center[i][j], max_color) )
     
     plt.show()
 
@@ -1153,7 +1152,6 @@ def detetctionCasesBruitees(data):
                 for i in range(0, len(tab)):
                     dist = distance( [r,g,b], tab[i][0] )
                     if dist < min:
-                        print dist, [r,g,b], tab[i][0]
                         indice = i
                         min = dist
                 if indice == len(tab):
@@ -1162,6 +1160,36 @@ def detetctionCasesBruitees(data):
                 
     #print tab
     return tab
+
+def correcteurCentre(data):
+
+    #il y a des cases bruitees
+    if len(data) > 6:
+        indice_centre_bruite = []
+        for i in range(0, 6):
+            if len(data[i]) == 1:
+                indice_centre_bruite.append(i)
+        
+        for i in range(6, len(data)):
+            if len(data[i]) > 4:
+
+                #groupe majoritaire eligible a ne pas etre bruite
+                #hypothese que ce soit le centre qui l est
+                min = 300000
+                indice_affectation = -1
+                for j in range(0, len(indice_centre_bruite)):
+                    dist = distance(data[indice_centre_bruite[j] ][0], data[i][0] )
+                    if dist < min:
+                        indice_affectation = indice_centre_bruite[j]
+                        min = dist
+                                    
+                #remplacement de la couleur centre par la couleur des cases du groupe majoritaire
+                
+                data[ indice_affectation ].extend(data[i])
+                data[ indice_affectation ][0] = data[i][0]
+                data[i] = []
+    return data
+                        
                         
 
 def calculDiffCentreCoinCote(data, mode="uniforme"):
@@ -1262,12 +1290,12 @@ diffCoin, diffCote = calculDiffCentreCoinCote(data)
 """
 test rgb
 """
+
 centre = couleurCentre(R3)
 tab = detetctionCasesBruitees(R3)
-showAffectation(tab, centre)
+d = correcteurCentre(tab)
+showAffectation(d, centre)
 #showData([R3], True)
-
-
 #draw_rgb_debut(R3_bruitGris2)
 
 
@@ -1299,7 +1327,7 @@ diff = calculDiffCentre(data)
 diffCoin, diffCote = calculDiffCentreCoinCote(data_rubiksponce)
 draw2(R1)
 """
-draw2(R3)
+
 
 """
 

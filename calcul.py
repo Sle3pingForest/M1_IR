@@ -14,8 +14,25 @@ def rgb255to01(c1,div):
 def distance(c1, c2):
 
     somme = 0
+
+    
+    #reduit la diff si cest la couleur max
+    m1,m2 = max(c1), max(c2)
+    i1,i2,indice = 0,0, -1
     for i in range(0, len(c1)):
-        somme += math.pow( (c1[i] - c2[i]), 2)
+        if c1[i] == m1:
+            i1 = i
+        if c2[i] == m2:
+            i2 = i
+    if i1 == i2:
+        indice = i1
+
+        
+    for i in range(0, len(c1)):
+        diff = (c1[i] - c2[i])
+        if indice == i:
+            diff /= 2
+        somme += math.pow(diff, 2)
     return math.sqrt(somme)
 
 
