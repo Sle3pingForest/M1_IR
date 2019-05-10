@@ -19,7 +19,7 @@ import numpy as np
 import math
 import colorsys
 from mpl_toolkits import mplot3d
-from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2,sameColor,distance
+from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2, ecart_delta_E, diffLABCoin,sameColor,distance
 from repartition_tri import repartition, repartition_egal
 
 
@@ -459,7 +459,8 @@ def draw2(data):
         for j in range(0,len(tabCoinCheck)): #parcours tous les triplets de couleurs des centre a comparer
             #print tabCoin[i], "    " , tabCoinCheck[j]
             #t, tt, indice = choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[j])
-            t = diffRGBCoin( tabCoin[i], tabCoinCheckDiff[j] )
+            #t = diffRGBCoin( tabCoin[i], tabCoinCheck[j] )
+            t = diffLABCoin( tabCoin[i], tabCoinCheck[j] )
             tabPref[i].append(t)
     """
     for i in range(0, len(tabPref)):
@@ -813,7 +814,7 @@ def draw_rgb_debut(data):
     """
     #showData([R1])
     
-    tab_tri = repartition_egal(color_center, c, 9)
+    tab_tri = repartition_egal(color_center, c, 9, 'RGB')
     fig = plt.figure()
     for i in range(0,len(tab_tri) ):
         
@@ -906,7 +907,7 @@ def test_hsv(data, data2 = []):
 
             
             
-    tab_repar = repartition_egal(tab_hsv, centre_hsv, 9, False)
+    tab_repar = repartition_egal(tab_hsv, centre_hsv, 9, 'HSV')
     
   
 
@@ -1265,6 +1266,8 @@ centre = couleurCentre(R3)
 tab = detetctionCasesBruitees(R3)
 showAffectation(tab, centre)
 #showData([R3], True)
+
+
 #draw_rgb_debut(R3_bruitGris2)
 
 
@@ -1296,7 +1299,7 @@ diff = calculDiffCentre(data)
 diffCoin, diffCote = calculDiffCentreCoinCote(data_rubiksponce)
 draw2(R1)
 """
-
+draw2(R3)
 
 """
 

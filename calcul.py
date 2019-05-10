@@ -87,6 +87,19 @@ def diffRGBCoin(tabCoin, tabCoinCheck):
 
     return round( float(  abs(somme1[0] - somme2[0] ) + abs(somme1[1] - somme2[1] ) + abs(somme1[2] - somme2[2] ) / 3), 2)
 
+
+def diffLABCoin(tabCoin, tabCoinCheck):
+
+    somme1 = [0,0,0]
+    somme2 = [0,0,0]
+
+    for i in range (0, len(tabCoin)):
+        for j in range(0, len(tabCoin[i])):
+            somme1[j] += tabCoin[i][j]
+            somme2[j] += tabCoinCheck[i][j]
+
+    return ecart_delta_E([somme1[0], somme1[1], somme1[2]] , [somme2[0], somme2[1], somme2[2]] )
+
 def sameColor(c1, c2):
     check = False
     if (c1[0] == c2[0]) and (c1[1] == c2[1]) and (c1[2] == c2[2]):
