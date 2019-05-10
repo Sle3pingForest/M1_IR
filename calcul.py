@@ -11,6 +11,13 @@ def rgb255to01(c1,div):
     c1[2] = round(c1[2])/div
     return c1
 
+def distance(c1, c2):
+
+    somme = 0
+    for i in range(0, len(c1)):
+        somme += math.pow( (c1[i] - c2[i]), 2)
+    return math.sqrt(somme)
+
 
 def t255to01(c1,div):
     color = 0

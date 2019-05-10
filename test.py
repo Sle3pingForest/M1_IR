@@ -19,7 +19,7 @@ import numpy as np
 import math
 import colorsys
 from mpl_toolkits import mplot3d
-from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2,sameColor
+from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2,sameColor,distance
 from repartition_tri import repartition, repartition_egal
 
 
@@ -227,7 +227,15 @@ def donnees(data):
 	     color_true.append([r, g, b])
     return x,y,color, color_true, max_reading
 
-
+# assemble x,y coordinates and sticker colors into three arrays
+def max_reading(data):
+    x, y, color, color_true, group_color = [], [], [], [], []
+    max_reading = 0
+    for side in data:
+        for facet in side:
+            for reading in facet:
+                max_reading = max(max_reading, reading)
+    return max_reading
 
 def draw_diffRGB(data):
     x, y, color, c, max_color = donnees(data)
@@ -1070,6 +1078,17 @@ def showData(data, plusieurs=False):
         plt.scatter(x, y, s=800, marker='s', c=color)
     plt.show()
 
+def showAffectation(color_center, centre):
+    max_color = max_reading(color_center)
+    fig = plt.figure()
+    for i in range(0,len(color_center) ):
+        if i < 6:
+            plt.scatter(i, 0, s=800, marker='o', c= t255to01(centre[i],max_color) )
+        for j in range (0 , len(color_center[i])):
+            plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  rgb255to01(color_center[i][j], max_color) )
+    
+    plt.show()
+
 def positionnement(data):
 
     tab_faces_group = []
@@ -1111,6 +1130,38 @@ def calculDiffCentre(data, mode="uniforme"):
         moyenneDiff.append(somme)
     return moyenneDiff
 
+#Trie les cases avec celles qui leurs ressemblent le plus
+#distance  avec un ecart +- de 10 de chaque r,g,b sqrt(300) = 17
+#pas de poids plus important si il y a une difference sur les couleurs non max
+#sinon affecte dans un nouveau tableau
+#les groupes de moins de 5 sont consideres comme cases bruitees
+def detetctionCasesBruitees(data):
+    tab = []
+    for i in range(0, len(data)):
+        tab.append([])
+        tab[i].append(data[i][4])
+        
+    for s, side in enumerate(data):
+        
+        for f, (r,g,b) in enumerate(side):
+            #si ce n est pas un centre
+            if f != 4:
+                min = 18
+                indice = len(tab)
+                #regarde ou le mettre
+                for i in range(0, len(tab)):
+                    dist = distance( [r,g,b], tab[i][0] )
+                    if dist < min:
+                        print dist, [r,g,b], tab[i][0]
+                        indice = i
+                        min = dist
+                if indice == len(tab):
+                    tab.append([])
+                tab[indice].append([r,g,b])
+                
+    #print tab
+    return tab
+                        
 
 def calculDiffCentreCoinCote(data, mode="uniforme"):
     
@@ -1210,10 +1261,11 @@ diffCoin, diffCote = calculDiffCentreCoinCote(data)
 """
 test rgb
 """
-
-
-showData([R3_bruitGris2], True)
-draw_rgb_debut(R3_bruitGris2)
+centre = couleurCentre(R3)
+tab = detetctionCasesBruitees(R3)
+showAffectation(tab, centre)
+#showData([R3], True)
+#draw_rgb_debut(R3_bruitGris2)
 
 
 
