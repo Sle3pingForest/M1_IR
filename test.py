@@ -1420,16 +1420,10 @@ draw3(R6)
 """
 test rgb
 """
-<<<<<<< HEAD
-
 centre = couleurCentre(R3_bruit5)
 tab = detetctionCasesBruitees(R3_bruit5)
 #showAffectation(tab, centre)
-=======
 #draw_rgb_debut(R3_bruit5)
-centre = couleurCentre(R3)
-tab = detetctionCasesBruitees(R3)
->>>>>>> 57c0f5df0baf2ced2f58061267db37afb87ab0bd
 d = correcteurCentre(tab)
 correcteurCoin(d)
 #showAffectation(d, centre)
