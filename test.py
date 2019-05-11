@@ -66,7 +66,7 @@ from donnees_des_tests.data_rubiksdamiennoir import data_rubiksdamiennoir
 from donnees_des_tests.data_0105_rubiksdamienblanc import data_0105_rubiksdamienblanc
 from donnees_des_tests.R3 import R3, R3_bruit1, R3_bruit2, R3_bruit3, R3_bruit4, R3_bruit5, R3_bruitGris1, R3_bruitGris2
 from donnees_des_tests.R1 import R1
-from donnees_des_tests.R2 import R2
+from donnees_des_tests.R2 import R2,R2_modif
 from donnees_des_tests.R4 import R4
 from donnees_des_tests.R5 import R5
 from donnees_des_tests.R6 import R6
@@ -130,10 +130,13 @@ def couleurCentre(data):
          tab.append(data[s][4])
      return tab
 
-def couleurArete(data):
+def couleurArete(data): #doublons de centre
     tab = []
+    tab_diff = []
+    tab_nuance = []
     for i in range(0,12):
         tab.append([])
+        tab_diff.append([])
 
     tab[0].extend((data[1][4],data[0][4]))
     tab[1].extend((data[2][4],data[0][4]))
@@ -147,7 +150,34 @@ def couleurArete(data):
     tab[9].extend((data[3][4],data[5][4]))
     tab[10].extend((data[3][4],data[4][4]))
     tab[11].extend((data[4][4],data[5][4]))
-    return tab
+
+#diffCoin, diffCote = calculDiffCentreCoinCote(data)
+############
+
+    #pour chaque couleur du doublons
+    for i in range(0, len(data)):
+        color = [0,0,0]
+        #pour chaque r g b de la couleur
+        for j in range(0, len(data[i][4])):
+            #print data[i][j]
+            #print diffCoin[i]
+            color[j] = data[i][4][j] + diffCote[i][j]
+        tab_nuance.append( color )
+
+
+    tab_diff[0].extend((tab_nuance[0], tab_nuance[1] , tab_nuance[2]))
+    tab_diff[1].extend((tab_nuance[0], tab_nuance[1] , tab_nuance[4]))
+    tab_diff[2].extend((tab_nuance[0], tab_nuance[2] , tab_nuance[3]))
+    tab_diff[3].extend((tab_nuance[0], tab_nuance[3] , tab_nuance[4]))
+
+    
+    tab_diff[4].extend((tab_nuance[5], tab_nuance[1] , tab_nuance[4]))
+    tab_diff[5].extend((tab_nuance[5], tab_nuance[1] , tab_nuance[2]))
+    tab_diff[6].extend((tab_nuance[5], tab_nuance[3] , tab_nuance[4]))
+    tab_diff[7].extend((tab_nuance[5], tab_nuance[2] , tab_nuance[3]))
+############
+    
+    return tab,tab_diff
 
 def tabAreteCouleur(data):
     tab = []
@@ -554,112 +584,8 @@ def draw3(data):
     x, y, color, c, max_color = donnees(data)   
     color_center = []
     tabPref = [] 
-    coinPref = [] 
-    tabCoin = tabAreteCouleur(data)
-    tab_coeff = {}
-    for k in range(0,6):
-      color_center.append([])
-    for k in range(0,12):  
-        tabPref.append([])
-    
-    tabCoinCheck = couleurArete(data)
-
-
-    # stocke les moyennes des differences les plus basses pour chaque coin centre
-    for i in range(0, len(tabCoin)): #parcours tous les coin 
-        for j in range(0,len(tabCoinCheck)): #parcours tous les triplets de couleurs des centre a comparer
-            #print tabCoin[i], "    " , tabCoinCheck[j]
-            t, tt = choixPlusPetiteDiffDoublons(tabCoin[i], tabCoinCheck[j])
-            tabPref[i].append(t)
-            
-    for i in range(0, len(tabPref)):
-        coinPref.append( choixMeilleurCentre(tabPref[i]) )
-
-
-        
-    test_coin = repartition(tabPref)
-    print "repartition : ",test_coin
-    nb_erreur = 0
-    for i in range(0, len(test_coin)):
-        if test_coin[i] != data_turned_coin_ok[i][1]:
-            nb_erreur += 1
-            #print test_coin[i] , "     " , data_coin_ok[i][1]
-
-    print float(nb_erreur)/8 *100 , "% d erreur  " ,   nb_erreur , "   sur " , len(test_coin)
-
-    print "affectation ", test_coin
-    
-    plt.figure(0)
-    
-    decalage = 0
-    for i in range(0,8):
-
-        for j in range(0,3):
-            couleurTabCoin = [ round( tabCoin[i][j][0] )/max_color , round( tabCoin[i][j][1])/max_color , round( tabCoin[i][j][2])/max_color ]
-            couleurCentreAssocie = [ round( tabCoinCheck[ test_coin[i] ][j][0])/max_color , round( tabCoinCheck[ test_coin[i] ][j][1])/max_color , round( tabCoinCheck[ test_coin[i] ][j][2])/max_color  ]
-            
-            couleurCentre = [ round( tabCoinCheck[ i ][j][0])/max_color, round( tabCoinCheck[ i ][j][1])/max_color , round( tabCoinCheck[ i ][j][2])/max_color  ]
-            if j == 0:
-                decalage += 5
-            plt.scatter(i*3+j + decalage, 0, s=800, marker='o', c= couleurTabCoin )
-            plt.scatter(i*3+j + decalage, 5, s=800, marker='o', c= couleurCentreAssocie )
-            #plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurCentre )
-    
-    #plt.savefig('tri_coin.png')
-    plt.show()
-
-    """
-    for i in range(0,len(tabCoin)):
-        tabIndice.append( coinPref[i][1])
-        indice = coinPref[i][1]
-        #t , tt, ttt= choixPlusPetiteDiff(tabCoin[i], tabCoinCheck[indice])
-        #tabFinal.append( tt )
-
-    nb_erreur = 0
-    for i in range(0, len(tabIndice)):
-        if tabIndice[i] != data_turned_coin_ok[i][1]:
-            nb_erreur += 1
-
-    print float(nb_erreur)/8 *100 , "% d erreur  " ,   nb_erreur , "   sur " , len(tabCoin)
-    """
-    copieCheck = tabCoinCheck
-    tabFigure = ['f', 'g', 'h', 'j' ,'k', 'l', 'm', 'n']
-
-    #print " association " , tabFinal
-    # print " coin centre " , copieCheck
-    """
-    plt.figure(0)
-    
-    decalage = 0
-    for i in range(0,8):
-
-        for j in range(0,3):
-            couleurTabCoin = [ round( tabCoin[i][j][0] )/68 , round( tabCoin[i][j][1])/68 , round( tabCoin[i][j][2])/68 ]
-            couleurCentreAssocie = [ round( tabCoinCheck[ tabIndice[i] ][j][0])/68 , round( tabCoinCheck[ tabIndice[i] ][j][1])/68 , round( tabCoinCheck[ tabIndice[i] ][j][2])/68  ]
-            if j == 0:
-                decalage += 5
-            plt.scatter(i*3+j + decalage, 0, s=800, marker='o', c= couleurCentreAssocie )
-            plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurTabCoin )
-
-    
-    #plt.savefig('tri_coin.png')
-    plt.show()
-
-    """
-
-
-    datas = [data_0105_rubiksdamienblanc, data_2804_rubiksdamiennoir,data_rubiksponce,data_rubiksdamiennoir,data_2804_prof_pres]#data_turned_1004_max_S_0_3pi,data_1004_max_S_0_3pi, data_1004_max_L_0_3pi]#data3, data_lumiere, data_lumiere2, data_sombre, data_sombre2]
-    #showData(datas,True)
-
-    # CA OUVRE 2 FENETRE YOUPI
-
-
-#############################
-def draw3(data):
-    x, y, color, c, max_color = donnees(data)   
-    color_center = []
-    tabPref = [] 
-    cotePref = [] 
+    cotePref = []
+    addTab = []
     tabCote = tabAreteCouleur(data)
     tab_coeff = {}
     for k in range(0,6):
@@ -667,14 +593,17 @@ def draw3(data):
     for k in range(0,12):  
         tabPref.append([])
     
-    tabCoteCheck = couleurArete(data)
+    tabCoteCheck,tabCoteCheckDiff = couleurArete(data)
+
+    
 
 
     # stocke les moyennes des differences les plus basses pour chaque coin centre
     for i in range(0, len(tabCote)): #parcours tous les coin 
         for j in range(0,len(tabCoteCheck)): #parcours tous les triplets de couleurs des centre a comparer
             #print tabCoin[i], "    " , tabCoinCheck[j]
-            t, tt = choixPlusPetiteDiffDoublons(tabCote[i], tabCoteCheck[j])
+            addTab = tabCoteCheck[j] +tabCoteCheckDiff[j]
+            t, tt = choixPlusPetiteDiffDoublons(tabCote[i], tabCoteCheck[j] +tabCoteCheckDiff[j] )
             tabPref[i].append(t)
             
     for i in range(0, len(tabPref)):
@@ -711,7 +640,11 @@ def draw3(data):
             #plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurCentre )
     
     #plt.savefig('tri_coin.png')
+    
     plt.show()
+  
+    
+    showData([data], True)
     
     """
     tabFinal = []
@@ -1471,23 +1404,32 @@ diffCoin, diffCote = calculDiffCentreCoinCote(data)
 #test_hsv(data_rubiksofficiel)
 #test_rgb_3D(data,68)
 #draw_rgb_debut(R2)
+
+#showData([R2_modif], True)
 #draw2(data_rubiksdamiennoir)
 #draw_rgb_debut(data_rubiksdamiennoir)
 #draw2(data_turned)
 #draw2(data_2804_rubiksdamiennoir)
 #draw(data)
 
-#draw3(data)
+
+draw3(R6)
 
 
 
 """
 test rgb
 """
+<<<<<<< HEAD
 
 centre = couleurCentre(R3_bruit5)
 tab = detetctionCasesBruitees(R3_bruit5)
 #showAffectation(tab, centre)
+=======
+#draw_rgb_debut(R3_bruit5)
+centre = couleurCentre(R3)
+tab = detetctionCasesBruitees(R3)
+>>>>>>> 57c0f5df0baf2ced2f58061267db37afb87ab0bd
 d = correcteurCentre(tab)
 correcteurCoin(d)
 #showAffectation(d, centre)
