@@ -19,7 +19,7 @@ def distance(c1, c2):
     #reduit la diff si cest la couleur max
     m1,m2 = max(c1), max(c2)
     i1,i2,indice = 0,0, -1
-    for i in range(0, len(c1)):
+    for i in range(0, 3):
         if c1[i] == m1:
             i1 = i
         if c2[i] == m2:
@@ -28,7 +28,7 @@ def distance(c1, c2):
         indice = i1
 
         
-    for i in range(0, len(c1)):
+    for i in range(0, 3):
         diff = (c1[i] - c2[i])
         if indice == i:
             diff /= 2
@@ -98,7 +98,7 @@ def diffRGBCoin(tabCoin, tabCoinCheck):
     somme2 = [0,0,0]
 
     for i in range (0, len(tabCoin)):
-        for j in range(0, len(tabCoin[i])):
+        for j in range(0, 3):
             somme1[j] += tabCoin[i][j]
             somme2[j] += tabCoinCheck[i][j]
 
@@ -111,7 +111,7 @@ def diffLABCoin(tabCoin, tabCoinCheck):
     somme2 = [0,0,0]
 
     for i in range (0, len(tabCoin)):
-        for j in range(0, len(tabCoin[i])):
+        for j in range(0, 3):
             somme1[j] += tabCoin[i][j]
             somme2[j] += tabCoinCheck[i][j]
 
@@ -186,3 +186,27 @@ def ecart_delta_E(cVar,cRef):
     delta_L_p2=(cVar[2] - cRef[2])**2
     delta_E = (delta_b_p2+delta_a_p2+delta_L_p2)**1/2
     return delta_E
+
+def compareIndiceCoin(tab1, tab2):
+
+    trouve = []
+    for i in range(0, len(tab1)):
+        trouve.append( False)
+        for j in range(0, len(tab2)):
+            if tab1[i][0] == tab2[j][5]:
+                trouve[i] = True
+    check = True
+    for i in range(0, len(trouve)):
+        if trouve[i] == False:
+            check = False
+    return check
+
+
+def nbIndiceCommun(tab1, tab2):
+    nb = 0
+
+    for i in range(0, len(tab1)):
+        for j in range(0, len(tab2)):
+            if tab1[i][0] == tab2[j][5]:
+                nb += 1
+    return nb

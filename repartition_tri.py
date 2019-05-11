@@ -43,8 +43,6 @@ def repartition_egal(tab_color,tab_centre, nb, rgb):
             for i in range(0, len(tab_copy)):
                 #tri ascendant sur la distance rgb
                 t = tri_fusion(tab_copy[i], tab_centre[  tab_indice_depassement[i] ], rgb)
-                if i == 1:
-                    print t
                 #print i
                 tab_color[ tab_indice_depassement[i] ] = t[0:nb]
                 #cases en trop a repartir
@@ -54,7 +52,6 @@ def repartition_egal(tab_color,tab_centre, nb, rgb):
             #repartir le reste
             for i in range(0, len(reste)):
                 min = 300000
-                print len(reste)
                 indice = 0
                 for j in range(0, len(tab_indice_manque)):
                     moy = 0
@@ -84,6 +81,28 @@ def repartition_egal(tab_color,tab_centre, nb, rgb):
             compt += 1
     return tab_color
 
+#trie chaque colonnes en fonction du plus ressemblant avec la 1 ere valeur de chaque tableau
+def trier(tab, nb, rgb):
+    reste = []
+    tab_color = []
+    tab_ref = []
+    for i in range(0, len(tab)):
+        tab_color.append([])
+        tab_ref.append(tab[i][0])
+    
+    for i in range(0, len(tab)):
+        #tri ascendant sur la distance rgb
+        t = tri_fusion(tab[i], tab_ref[i], rgb)
+        tab_color[ i ] = t[0:nb]
+        
+        #cases en trop a repartir
+        size = len(reste)
+        reste.append([])
+        reste[size].extend(t[nb:])
+
+    return tab_color, reste
+                
+    
 
 
 def fusion(t1, t2, centre, rgb):

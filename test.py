@@ -19,8 +19,8 @@ import numpy as np
 import math
 import colorsys
 from mpl_toolkits import mplot3d
-from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2,sameColor,distance
-from repartition_tri import repartition, repartition_egal
+from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2,sameColor,distance, compareIndiceCoin, nbIndiceCommun
+from repartition_tri import repartition, repartition_egal, trier
 
 
 from data.data3 import data3
@@ -976,12 +976,13 @@ def test_rgb_3D(data):
 # entre les couleurs des centres et les couleurs des coins
 def choixPlusPetiteDiff(tabCoin, tabCoinCheck):
 
+    coin_centre = []
     tabdiffFinal = []
     for i in range(0,1):
         tabC = []
         for p in range(0,3):
             tabC.append([])
-        
+            
 
         tabC[0].append(moyenneRGB(tabCoin[0] , tabCoinCheck[0]))
         tabC[0].append(moyenneRGB(tabCoin[0] , tabCoinCheck[1]))
@@ -1013,6 +1014,7 @@ def choixPlusPetiteDiff(tabCoin, tabCoinCheck):
                    
             tabdiffFinal.append(tabC[indice][j])
             tabaffiche.append(tabCoin[indice])
+            #coin_centre.append(coinI[indice])
             tabC[indice][0] = 256 
             tabC[indice][1] = 256 
             tabC[indice][2] = 256
@@ -1139,10 +1141,10 @@ def detetctionCasesBruitees(data):
     tab = []
     for i in range(0, len(data)):
         tab.append([])
-        tab[i].append(data[i][4])
+        c = [ data[i][4][0], data[i][4][1], data[i][4][2], i, 4]
+        tab[i].append(c)
         
     for s, side in enumerate(data):
-        
         for f, (r,g,b) in enumerate(side):
             #si ce n est pas un centre
             if f != 4:
@@ -1156,9 +1158,34 @@ def detetctionCasesBruitees(data):
                         min = dist
                 if indice == len(tab):
                     tab.append([])
-                tab[indice].append([r,g,b])
+                tab[indice].append([r,g,b,s,f])
                 
-    #print tab
+    t, reste = trier(tab[0:6], 9, 'RGB')
+
+    
+    for i in range(0, len(t)):
+        tab[i] = t[i]
+
+    for i in range(0, len(reste)):
+        if len(reste[i]) > 0:
+            size = len(tab)
+            tab.append([])
+            tab[size].extend(reste[i])
+    
+    #si il y a plus de 9 cases associe a un centre
+    for i in range(0, 6):
+        size = len(tab[i])
+        #print size
+        if size > 9:
+            indice = len(tab)
+            tab.append([])
+            tab[indice].extend( tab[i][9:size] )
+            for j in range(9, size):
+                tab[i].pop(j)
+    """
+    for i in range(0, len(tab)):
+        print tab[i]
+    """
     return tab
 
 def correcteurCentre(data):
@@ -1186,11 +1213,178 @@ def correcteurCentre(data):
                 #remplacement de la couleur centre par la couleur des cases du groupe majoritaire
                 
                 data[ indice_affectation ].extend(data[i])
-                data[ indice_affectation ][0] = data[i][0]
-                data[i] = []
+                c = [ data[i][0][0], data[i][0][1], data[i][0][2],  data[ indice_affectation ][0][3],  data[ indice_affectation ][0][4] ]
+                data[ indice_affectation ][0] = c
+                for j in range( len(data[i])-1, -1, -1):
+                    data[i].pop(j)
+    
     return data
+
+def tabCoinIndice():
+
+    tab_coin_indice = []
+    for i in range(0, 8):
+        tab_coin_indice.append( [] )
+    
+    tab_coin_indice[0].extend(([0,0], [1,6], [2,2]))
+    tab_coin_indice[1].extend(([0,2], [1,8], [4,0]))
+    tab_coin_indice[2].extend(([0,6], [2,8], [3,0]))
+    tab_coin_indice[3].extend(([0,8], [3,2], [4,6]))
+    
+    tab_coin_indice[4].extend(([1,2], [4,2], [5,0]))
+    tab_coin_indice[5].extend(([1,0], [2,0], [5,2]))
+    tab_coin_indice[6].extend(([3,8], [4,8], [5,6]))
+    tab_coin_indice[7].extend(([2,6], [3,6], [5,8]))
+    
+    return tab_coin_indice
+
+def gardeCoinAtrouver(tabCoin, tab_coin_centre):
+    
+    coinI = tabCoinIndice()
+
+    #coin qui ont trouve une association
+    coinTrouve = []
+    
+    for i in range(0, len(coinI)):
+        trouve = False
+        for j in range(0, len(tabCoin)):
+            check = compareIndiceCoin(coinI[i], tabCoin[j])
+            if check == True:
+                trouve = True
+        if trouve == True:
+            coinTrouve.append(i)
+
+    for i in range( len(coinTrouve)-1, -1, -1):
+        coinI.pop(coinTrouve[i])
+        print len(tab_coin_centre), coinTrouve[i]
+        tab_coin_centre.pop(coinTrouve[i])
+    return coinI, tab_coin_centre
+
+
+def correcteurCoin(data):
+
+    centre = couleurCentre(R3_bruit5)
+    #showAffectation(data, centre)
+
+
+    
+    tab_coin_indice = tabCoinIndice()
+    tab_coin_centre, t = couleurCoin(R3_bruit5)
+    
+    tabCoin = []
+    for i in range(0, 8):
+        tabCoin.append( [] )
+
+    
+    for i in range(0, len(data)):
+        for j in range(0, len(data[i])):
+
+            for k in range(0, len(tab_coin_indice)):
+                for l in range(0, len(tab_coin_indice[k])):
+                    """
+                    print i , "  ", j ,data[i][j][3]
+                    print data[i][j][4]
+                    print tab_coin_indice[k][l][0]
+                    print tab_coin_indice[k][l][1]
+                    """
+                    if tab_coin_indice[k][l][0] == data[i][j][3] and tab_coin_indice[k][l][1] == data[i][j][4]:
+                        if i < 6:
+                            centreassocie = i
+                        else:
+                            centreassocie = -1
+
+                        d = [ data[i][j][0], data[i][j][1], data[i][j][2], data[i][j][3], data[i][j][4], centreassocie]
+                        tabCoin[k].append(d)
+
+
+    #triplet dont on ne connait pas encore l association       
+    tabCoin_pas_trouve = []
+    for i in range(0, len(tabCoin)):
+        trouve = True
+        for j in range(0, len(tabCoin[i])):
+            if tabCoin[i][j][5] == -1:
+                trouve = False
+        if trouve == False:
+            tabCoin_pas_trouve.append(tabCoin[i])
+
+
+    #indice des coins manquants
+    coinI, tab_coin_centre = gardeCoinAtrouver(tabCoin, tab_coin_centre)
+
+    
+    print " AAAAAAAAAAAAAAAAAAyyyyy", coinI, tabCoin_pas_trouve
+
+    
+
+
+    #On Va decider pour les restants
+
+    while len(coinI) > 0:
+        #recuperer les indices des cases dont on connait l association
+        affectation_manque_disponible = []
+
+        # affectation des coin a trouver avec les coins centre disponibles
+        for i in range(0, len(tabCoin_pas_trouve)):
+            affectation_manque_disponible.append([])
+            nb_inconnu = 0
+            for j in range(0, len(tabCoin_pas_trouve[i])):
+                if tabCoin_pas_trouve[i][j][5] == -1:
+                    nb_inconnu += 1
+            for k in range(0, len(coinI)):
+                nb_egal = nbIndiceCommun(coinI[k], tabCoin_pas_trouve[i])
+                if nb_egal > 0 and nb_egal + nb_inconnu == 3:
+                    affectation_manque_disponible[i].append([k, nb_egal, nb_inconnu])
+
+
+        coin_centre_devenu_non_dispo = []
+        for i in range(0, len(affectation_manque_disponible)):
+        
+            #si juste 1 affectation
+            if len(affectation_manque_disponible[i]) == 1:
+                coin_centre_devenu_non_dispo.append(affectation_manque_disponible[i][0][0] )
+                t, tt, indice = choixPlusPetiteDiff(tabCoin_pas_trouve[i], tab_coin_centre[ affectation_manque_disponible[i][0][0] ] )
+                print tt
+                print tab_coin_centre[ affectation_manque_disponible[i][0][0] ]
+                print coinI[  affectation_manque_disponible[i][0][0] ]
+                for j in range(0, len(tabCoin[i])):
+                    if tabCoin[i][j][5] == -1:
+                        print coinI[ affectation_manque_disponible[i][0][0] ][j][0]  , affectation_manque_disponible[i][0][0]
+                        tabCoin[i][j][5] = coinI[ affectation_manque_disponible[i][0][0] ] [j][0]
+
+
                         
-                        
+        # on enleve les coin centre qui deviennent non disponible
+        for k in range(len(coin_centre_devenu_non_dispo) - 1, -1, -1):
+            coinI.pop(coin_centre_devenu_non_dispo[k])
+
+            
+    print "\n\n"
+    for i in range(0, len(tabCoin)):
+        print tabCoin[i]
+    
+    """           
+    plt.figure(0)
+    decalage = 0
+    max_color = max_reading(data)
+    for i in range(0,8):
+
+        for j in range(0,3):
+            couleurTabCoin = [ round( tabCoin[i][j][0] )/max_color , round( tabCoin[i][j][1])/max_color , round( tabCoin[i][j][2])/max_color ]
+            #couleurCentreAssocie = [ round( tabCoinCheck[ test_coin[i] ][j][0])/max_color , round( tabCoinCheck[ test_coin[i] ][j][1])/max_color , round( tabCoinCheck[ test_coin[i] ][j][2])/max_color  ]
+            
+            #couleurCentre = [ round( tabCoinCheck[ i ][j][0])/max_color, round( tabCoinCheck[ i ][j][1])/max_color , round( tabCoinCheck[ i ][j][2])/max_color  ]
+            if j == 0:
+                decalage += 5
+            plt.scatter(i*1+j + decalage, 0, s=800, marker='o', c= couleurTabCoin )
+            #plt.scatter(i*1+j + decalage, 5, s=800, marker='o', c= couleurCentreAssocie )
+            #plt.scatter(i*3+j + decalage, 10, s=800, marker='o', c= couleurCentre )
+    
+    #plt.savefig('tri_coin.png')
+    plt.show()
+    """
+
+
+    
 
 def calculDiffCentreCoinCote(data, mode="uniforme"):
     
@@ -1291,10 +1485,15 @@ diffCoin, diffCote = calculDiffCentreCoinCote(data)
 test rgb
 """
 
-centre = couleurCentre(R3)
-tab = detetctionCasesBruitees(R3)
+centre = couleurCentre(R3_bruit5)
+tab = detetctionCasesBruitees(R3_bruit5)
+#showAffectation(tab, centre)
 d = correcteurCentre(tab)
-showAffectation(d, centre)
+correcteurCoin(d)
+#showAffectation(d, centre)
+#draw2(R3_bruit5)
+
+
 #showData([R3], True)
 #draw_rgb_debut(R3_bruitGris2)
 
