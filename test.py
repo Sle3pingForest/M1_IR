@@ -19,7 +19,7 @@ import numpy as np
 import math
 import colorsys
 from mpl_toolkits import mplot3d
-from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2,sameColor
+from calcul import moyenneRGB, rgb255to01, t255to01, diffRGB, choixMeilleurCentre, distance_hue, distance_hsv, diffRGBCoin, sameColor, diffRGB_2,sameColor,distance
 from repartition_tri import repartition, repartition_egal
 
 
@@ -64,7 +64,7 @@ from donnees_des_tests.data_rubiksofficiel import data_rubiksofficiel
 from donnees_des_tests.data_rubiksponce import data_rubiksponce
 from donnees_des_tests.data_rubiksdamiennoir import data_rubiksdamiennoir
 from donnees_des_tests.data_0105_rubiksdamienblanc import data_0105_rubiksdamienblanc
-from donnees_des_tests.R3 import R3, R3_bruit1, R3_bruit2, R3_bruit3, R3_bruit4, R3_bruit5
+from donnees_des_tests.R3 import R3, R3_bruit1, R3_bruit2, R3_bruit3, R3_bruit4, R3_bruit5, R3_bruitGris1, R3_bruitGris2
 from donnees_des_tests.R1 import R1
 from donnees_des_tests.R2 import R2,R2_modif
 from donnees_des_tests.R4 import R4
@@ -257,7 +257,15 @@ def donnees(data):
 	     color_true.append([r, g, b])
     return x,y,color, color_true, max_reading
 
-
+# assemble x,y coordinates and sticker colors into three arrays
+def max_reading(data):
+    x, y, color, color_true, group_color = [], [], [], [], []
+    max_reading = 0
+    for side in data:
+        for facet in side:
+            for reading in facet:
+                max_reading = max(max_reading, reading)
+    return max_reading
 
 def draw_diffRGB(data):
     x, y, color, c, max_color = donnees(data)
@@ -1003,6 +1011,17 @@ def showData(data, plusieurs=False):
         plt.scatter(x, y, s=800, marker='s', c=color)
     plt.show()
 
+def showAffectation(color_center, centre):
+    max_color = max_reading(color_center)
+    fig = plt.figure()
+    for i in range(0,len(color_center) ):
+        if i < 6:
+            plt.scatter(i, 0, s=800, marker='o', c= t255to01(centre[i],max_color) )
+        for j in range (0 , len(color_center[i])):
+            plt.scatter(i, 10 + j* 5, s=800, marker='o', c=  t255to01(color_center[i][j], max_color) )
+    
+    plt.show()
+
 def positionnement(data):
 
     tab_faces_group = []
@@ -1044,6 +1063,67 @@ def calculDiffCentre(data, mode="uniforme"):
         moyenneDiff.append(somme)
     return moyenneDiff
 
+#Trie les cases avec celles qui leurs ressemblent le plus
+#distance  avec un ecart +- de 10 de chaque r,g,b sqrt(300) = 17
+#pas de poids plus important si il y a une difference sur les couleurs non max
+#sinon affecte dans un nouveau tableau
+#les groupes de moins de 5 sont consideres comme cases bruitees
+def detetctionCasesBruitees(data):
+    tab = []
+    for i in range(0, len(data)):
+        tab.append([])
+        tab[i].append(data[i][4])
+        
+    for s, side in enumerate(data):
+        
+        for f, (r,g,b) in enumerate(side):
+            #si ce n est pas un centre
+            if f != 4:
+                min = 18
+                indice = len(tab)
+                #regarde ou le mettre
+                for i in range(0, len(tab)):
+                    dist = distance( [r,g,b], tab[i][0] )
+                    if dist < min:
+                        indice = i
+                        min = dist
+                if indice == len(tab):
+                    tab.append([])
+                tab[indice].append([r,g,b])
+                
+    #print tab
+    return tab
+
+def correcteurCentre(data):
+
+    #il y a des cases bruitees
+    if len(data) > 6:
+        indice_centre_bruite = []
+        for i in range(0, 6):
+            if len(data[i]) == 1:
+                indice_centre_bruite.append(i)
+        
+        for i in range(6, len(data)):
+            if len(data[i]) > 4:
+
+                #groupe majoritaire eligible a ne pas etre bruite
+                #hypothese que ce soit le centre qui l est
+                min = 300000
+                indice_affectation = -1
+                for j in range(0, len(indice_centre_bruite)):
+                    dist = distance(data[indice_centre_bruite[j] ][0], data[i][0] )
+                    if dist < min:
+                        indice_affectation = indice_centre_bruite[j]
+                        min = dist
+                                    
+                #remplacement de la couleur centre par la couleur des cases du groupe majoritaire
+                
+                data[ indice_affectation ].extend(data[i])
+                data[ indice_affectation ][0] = data[i][0]
+                data[i] = []
+    return data
+                        
+                        
 
 def calculDiffCentreCoinCote(data, mode="uniforme"):
     
@@ -1130,6 +1210,7 @@ diffCoin, diffCote = calculDiffCentreCoinCote(data)
 #test_hsv(data_rubiksofficiel)
 #test_rgb_3D(data,68)
 #draw_rgb_debut(R2)
+
 #showData([R2_modif], True)
 #draw2(data_rubiksdamiennoir)
 #draw_rgb_debut(data_rubiksdamiennoir)
@@ -1145,8 +1226,13 @@ draw3(R6)
 """
 test rgb
 """
-
 #draw_rgb_debut(R3_bruit5)
+centre = couleurCentre(R3)
+tab = detetctionCasesBruitees(R3)
+d = correcteurCentre(tab)
+showAffectation(d, centre)
+#showData([R3], True)
+#draw_rgb_debut(R3_bruitGris2)
 
 
 

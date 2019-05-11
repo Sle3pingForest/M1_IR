@@ -11,6 +11,30 @@ def rgb255to01(c1,div):
     c1[2] = round(c1[2])/div
     return c1
 
+def distance(c1, c2):
+
+    somme = 0
+
+    
+    #reduit la diff si cest la couleur max
+    m1,m2 = max(c1), max(c2)
+    i1,i2,indice = 0,0, -1
+    for i in range(0, len(c1)):
+        if c1[i] == m1:
+            i1 = i
+        if c2[i] == m2:
+            i2 = i
+    if i1 == i2:
+        indice = i1
+
+        
+    for i in range(0, len(c1)):
+        diff = (c1[i] - c2[i])
+        if indice == i:
+            diff /= 2
+        somme += math.pow(diff, 2)
+    return math.sqrt(somme)
+
 
 def t255to01(c1,div):
     color = 0
@@ -80,6 +104,19 @@ def diffRGBCoin(tabCoin, tabCoinCheck):
 
     return round( float(  abs(somme1[0] - somme2[0] ) + abs(somme1[1] - somme2[1] ) + abs(somme1[2] - somme2[2] ) / 3), 2)
 
+
+def diffLABCoin(tabCoin, tabCoinCheck):
+
+    somme1 = [0,0,0]
+    somme2 = [0,0,0]
+
+    for i in range (0, len(tabCoin)):
+        for j in range(0, len(tabCoin[i])):
+            somme1[j] += tabCoin[i][j]
+            somme2[j] += tabCoinCheck[i][j]
+
+    return ecart_delta_E([somme1[0], somme1[1], somme1[2]] , [somme2[0], somme2[1], somme2[2]] )
+
 def sameColor(c1, c2):
     check = False
     if (c1[0] == c2[0]) and (c1[1] == c2[1]) and (c1[2] == c2[2]):
@@ -141,3 +178,11 @@ def calculEcartAvecCentre(data):
                 diffB = abs(diff[side][0][2] - b)
                 diff.append([diffR, diffG, diffB])
     return diff
+
+
+def ecart_delta_E(cVar,cRef):
+    delta_b_p2=(cVar[0] - cRef[0])**2
+    delta_a_p2=(cVar[1] - cRef[1])**2
+    delta_L_p2=(cVar[2] - cRef[2])**2
+    delta_E = (delta_b_p2+delta_a_p2+delta_L_p2)**1/2
+    return delta_E
