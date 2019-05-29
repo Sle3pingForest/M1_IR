@@ -1,14 +1,16 @@
 """
-
-verifie si tous les tableaux ne depassent pas une taille limite 
-si oui on trie et on repartie le surplus dans les autres 
-dans le cas du rubik's cube il y a 6 tableaux de 8 ou 9 faces selon si 
-l'on garde les centres ou non
+methode qui repartit les groupes (simplet,doublon,triplet) avec leur centre respectif
 """
 
 import calcul
 import colorsys
 
+"""
+verifie si tous les tableaux ne depassent pas une taille limite 
+si oui on trie et on repartie le surplus dans les autres 
+dans le cas du rubik's cube il y a 6 tableaux de 8 ou 9 faces selon si 
+l'on garde les centres ou non
+"""
 def repartition_egal(tab_color,tab_centre, nb, rgb):
     #nb : nombre de cases pour chaque faces
     #tab_data : tableau 2d de triplet de couleur (r,g,b) 
@@ -155,7 +157,7 @@ def tri_fusion(tab, centre, rgb):
 
 
 
-    #parcours et choisit pour chaque triplet le centre le plus ressemblant (rgb)
+#parcours et choisit pour chaque triplet le centre le plus ressemblant (rgb)
 def repartition(tabPref):
     
     fini = False

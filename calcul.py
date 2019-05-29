@@ -11,11 +11,11 @@ def rgb255to01(c1,div):
     c1[2] = round(c1[2])/div
     return c1
 
+#distance euclidienne entre deux couleurs
+#reduit lecart si le (r,g,b) le plus grand est le meme
 def distance(c1, c2):
 
     somme = 0
-
-    
     #reduit la diff si cest la couleur max
     m1,m2 = max(c1), max(c2)
     i1,i2,indice = 0,0, -1
@@ -35,12 +35,13 @@ def distance(c1, c2):
         somme += math.pow(diff, 2)
     return math.sqrt(somme)
 
-
+# remet la couleur au format entre 0 et 1
 def t255to01(c1,div):
     color = 0
     color = [ round(c1[0])/div,  round(c1[1])/div,  round(c1[2])/div ] 
     return  color
 
+# calcul l espace XYZ et la difference entre les deux couleurs
 def calculDiffColorRGB(c1, c2):
 
     r1 = c1[0]/ (c1[0]+c1[1]+c1[2])
@@ -53,6 +54,7 @@ def calculDiffColorRGB(c1, c2):
     b2 = c2[2]/ (c2[0]+c2[1]+c2[2])
     return abs(r1-r2), abs(g1-g2),abs(b1-b2)
 
+#calcul la difference entre deux couleurs
 def diffRGB(c1, c2): 
     r1 = abs(c1[0] - c2[0])
 
@@ -72,6 +74,7 @@ def diffRGB_2(c1, c2):
 
     return r1,g1,b1
 
+#distance euclidienne
 def compare2Couleur(c1 , c2):
     r1, g1, b1 = diffRGB(c1,c2)
 
@@ -123,7 +126,11 @@ def sameColor(c1, c2):
         check = True
     return check
 
-
+"""
+calcul la distance euclidienne hsv
+le hsv est representee sous forme de 3 vecteurs compris entre 0 et 1
+gere la representation du cercle chromatique, le hue
+"""
 def distance_hsv(hsv1, hsv2):
     dist = 0
     if hsv1[0] > hsv2[0]:
